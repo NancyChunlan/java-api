@@ -29,6 +29,8 @@ package net.ossindex.common.resource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -53,6 +55,13 @@ public class FileResource extends AbstractRemoteResource
 	 * overridden by local file.
 	 */
 	private String name = null;
+	
+	/**
+	 * Various sha1 checksums
+	 */
+	private String sha1Mac = null;
+	private String sha1Unix = null;
+	private String sha1Win = null;
 
 	/**
 	 * Required for deserialization
@@ -93,9 +102,38 @@ public class FileResource extends AbstractRemoteResource
 	 */
 	public static FileResource find(File file) throws IOException
 	{
+		FileResource[] resources = find(new File[] {file});
+		if(resources != null && resources.length > 0) return resources[0];
+		return null;
+	}
+	
+	/** Get multiple matching resources for the specified files. If a file
+	 * does not have a match then a null will be placed in the results array.
+	 * 
+	 * This is done so the user knows which result belongs with which
+	 * input file.
+	 * 
+	 * @param files
+	 * @return
+	 * @throws IOException
+	 */
+	public static FileResource[] find(File[] files) throws IOException
+	{
+		if(files == null || files.length == 0) return new FileResource[0];
+		
 		CloseableHttpClient httpClient = HttpClients.createDefault();
-		String requestString = getBaseUrl() + "/rest/sha1/" + getSha1(file);
+		StringBuilder sb = new StringBuilder(getBaseUrl());
+		sb.append("/rest/sha1/");
+		for(int i = 0; i < files.length; i++)
+		{
+			File file = files[i];
+			if(i > 0) sb.append(",");
+			String sha1 = getSha1(file);
+			sb.append(sha1);
+		}
+		String requestString = sb.toString();
 		System.err.print("Request: " + requestString + "...");
+		
 		try
 		{
 			HttpGet request = new HttpGet(requestString);
@@ -104,13 +142,8 @@ public class FileResource extends AbstractRemoteResource
 			Gson gson = new Gson();
 			try
 			{
-				FileResource result = gson.fromJson(json, FileResource.class);
-				if(result != null && result.getId() > 0)
-				{
-					// Override the file name
-					result.setName(file.getName());
-					return result;
-				}
+				FileResource[] resources = gson.fromJson(json, FileResource[].class);
+				return resources;
 			}
 			catch(JsonSyntaxException e)
 			{
@@ -122,6 +155,33 @@ public class FileResource extends AbstractRemoteResource
 		{
 			System.err.println(" done");
 		}
+	}
+
+	/** Get the sha1 checksum for OSX type line endings
+	 * 
+	 * @return
+	 */
+	public String getSha1Mac()
+	{
+		return sha1Mac;
+	}
+
+	/** Get the sha1 checksum for Unix type line endings
+	 * 
+	 * @return
+	 */
+	public String getSha1Unix()
+	{
+		return sha1Unix;
+	}
+
+	/** Get the sha1 checksum for Microsoft Windows type line endings
+	 * 
+	 * @return
+	 */
+	public String getSha1Win()
+	{
+		return sha1Win;
 	}
 
 	/** Get the SHA1 checksum for the file.
