@@ -1,5 +1,5 @@
 /**
- *	Copyright (c) 2014-2015 Vör Security Inc.
+ *	Copyright (c) 2015 Vör Security Inc.
  *	All rights reserved.
  *	
  *	Redistribution and use in source and binary forms, with or without
@@ -34,7 +34,7 @@ package net.ossindex.common.resource;
  */
 public abstract class AbstractRemoteResource
 {
-	private static final boolean DEBUG = true;
+	private static final boolean DEBUG_HOST = false;
 	/**
 	 * Bad form! Hard-coded for prototype.
 	 */
@@ -47,7 +47,7 @@ public abstract class AbstractRemoteResource
 	 */
 	static
 	{
-		if(DEBUG)
+		if(DEBUG_HOST)
 		{
 			scheme = "http";
 			host = "localhost";

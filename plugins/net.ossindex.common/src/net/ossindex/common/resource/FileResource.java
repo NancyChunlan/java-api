@@ -1,5 +1,5 @@
 /**
- *	Copyright (c) 2014-2015 Vör Security Inc.
+ *	Copyright (c) 2015 Vör Security Inc.
  *	All rights reserved.
  *	
  *	Redistribution and use in source and binary forms, with or without
@@ -53,7 +53,7 @@ public class FileResource extends AbstractRemoteResource
 	 * overridden by local file.
 	 */
 	private String name = null;
-	
+
 	/** The empty constructor should only be accessed internally.
 	 * 
 	 * @param file
@@ -62,6 +62,24 @@ public class FileResource extends AbstractRemoteResource
 	{
 	}
 	
+	/**
+	 * 
+	 * @return
+	 */
+	public String getName()
+	{
+		return name;
+	}
+	
+	/** Override the name provided by OSS Index.
+	 * 
+	 * @param name
+	 */
+	public void setName(String name)
+	{
+		this.name = name;
+	}
+
 	/** Find an applicable resource, otherwise return null. Use a combination
 	 * of HttpClient and GSON to handle the request and response.
 	 * 
@@ -73,21 +91,33 @@ public class FileResource extends AbstractRemoteResource
 	{
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 		String requestString = getBaseUrl() + "/rest/sha1/" + getSha1(file);
-		HttpGet request = new HttpGet(requestString);
-		CloseableHttpResponse response = httpClient.execute(request);
-		String json = EntityUtils.toString(response.getEntity(), "UTF-8");
-		System.err.println(getSha1(file) + " " + json);
-		Gson gson = new Gson();
+		System.err.print("Request: " + requestString + "...");
 		try
 		{
-		FileResource result = gson.fromJson(json, FileResource.class);
-		if(result.getId() > 0) return result;
+			HttpGet request = new HttpGet(requestString);
+			CloseableHttpResponse response = httpClient.execute(request);
+			String json = EntityUtils.toString(response.getEntity(), "UTF-8");
+			Gson gson = new Gson();
+			try
+			{
+				FileResource result = gson.fromJson(json, FileResource.class);
+				if(result != null && result.getId() > 0)
+				{
+					// Override the file name
+					result.setName(file.getName());
+					return result;
+				}
+			}
+			catch(JsonSyntaxException e)
+			{
+				System.err.println("Exception parsing response from request '" + requestString + "'");
+			}
+			return null;
 		}
-		catch(JsonSyntaxException e)
+		finally
 		{
-			System.err.println("Exception parsing response from request '" + requestString + "'");
+			System.err.println(" done");
 		}
-        return null;
 	}
 
 	/** Get the SHA1 checksum for the file.
@@ -123,5 +153,5 @@ public class FileResource extends AbstractRemoteResource
 	{
 		return "file";
 	}
-	
+
 }
