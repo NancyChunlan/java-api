@@ -64,6 +64,22 @@ public abstract class AbstractRemoteResource
 	 */
 	private long id = -1;
 	
+	/**
+	 * Required for deserialization
+	 */
+	AbstractRemoteResource()
+	{
+	}
+	
+	/**
+	 * 
+	 * @param id
+	 */
+	public AbstractRemoteResource(long id)
+	{
+		this.id = id;
+	}
+
 	/** Get the OSS Index ID.
 	 * 
 	 * @return
@@ -71,6 +87,15 @@ public abstract class AbstractRemoteResource
 	public long getId()
 	{
 		return id;
+	}
+	
+	/** Returns true if the resource exists at OSS Index
+	 * 
+	 * @return
+	 */
+	public boolean exists()
+	{
+		return id > 0;
 	}
 	
 	/** Get the base URL for REST requests.

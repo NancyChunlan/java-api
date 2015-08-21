@@ -54,14 +54,18 @@ public class FileResource extends AbstractRemoteResource
 	 */
 	private String name = null;
 
-	/** The empty constructor should only be accessed internally.
-	 * 
-	 * @param file
+	/**
+	 * Required for deserialization
 	 */
-	private FileResource()
+	FileResource()
 	{
 	}
 	
+	public FileResource(long id)
+	{
+		super(id);
+	}
+
 	/**
 	 * 
 	 * @return
@@ -153,5 +157,4 @@ public class FileResource extends AbstractRemoteResource
 	{
 		return "file";
 	}
-
 }
