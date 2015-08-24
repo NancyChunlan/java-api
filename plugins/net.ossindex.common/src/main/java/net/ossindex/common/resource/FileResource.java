@@ -29,8 +29,7 @@ package net.ossindex.common.resource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.net.ConnectException;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -56,13 +55,6 @@ public class FileResource extends AbstractRemoteResource
 	 */
 	private String name = null;
 	
-	/**
-	 * Various sha1 checksums
-	 */
-	private String sha1Mac = null;
-	private String sha1Unix = null;
-	private String sha1Win = null;
-
 	/**
 	 * Required for deserialization
 	 */
@@ -123,7 +115,7 @@ public class FileResource extends AbstractRemoteResource
 		
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 		StringBuilder sb = new StringBuilder(getBaseUrl());
-		sb.append("/rest/sha1/");
+		sb.append("/v1.0/sha1/");
 		for(int i = 0; i < files.length; i++)
 		{
 			File file = files[i];
@@ -148,40 +140,16 @@ public class FileResource extends AbstractRemoteResource
 			catch(JsonSyntaxException e)
 			{
 				System.err.println("Exception parsing response from request '" + requestString + "'");
+				System.err.println(json);
+				
+				// Throw a connect exception so that the caller knows not to try any more.
+				throw new ConnectException(e.getMessage());
 			}
-			return null;
 		}
 		finally
 		{
 			System.err.println(" done");
 		}
-	}
-
-	/** Get the sha1 checksum for OSX type line endings
-	 * 
-	 * @return
-	 */
-	public String getSha1Mac()
-	{
-		return sha1Mac;
-	}
-
-	/** Get the sha1 checksum for Unix type line endings
-	 * 
-	 * @return
-	 */
-	public String getSha1Unix()
-	{
-		return sha1Unix;
-	}
-
-	/** Get the sha1 checksum for Microsoft Windows type line endings
-	 * 
-	 * @return
-	 */
-	public String getSha1Win()
-	{
-		return sha1Win;
 	}
 
 	/** Get the SHA1 checksum for the file.
