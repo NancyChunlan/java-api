@@ -50,6 +50,11 @@ import com.google.gson.JsonSyntaxException;
 public class FileResource extends AbstractRemoteResource
 {
 	/**
+	 * Temporary boolean for debugging purposes.
+	 */
+	private static boolean DEBUG = false;
+	
+	/**
 	 * File name. May be populated by OSS Index, but can be
 	 * overridden by local file.
 	 */
@@ -124,7 +129,7 @@ public class FileResource extends AbstractRemoteResource
 			sb.append(sha1);
 		}
 		String requestString = sb.toString();
-		System.err.print("Request: " + requestString + "...");
+		if(DEBUG) System.err.print("Request: " + requestString + "...");
 		
 		try
 		{
