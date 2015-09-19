@@ -24,101 +24,52 @@
  *	(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  *	SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.ossindex.common.resource;
+package net.ossindex.common.utils;
 
-
-/** Provides common code for OSS Index API access.
+/**
  * 
  * @author Ken Duck
  *
  */
-public abstract class AbstractRemoteResource
+public class PackageDependency
 {
-	/**
-	 * Bad form! Hard-coded for prototype.
-	 */
-	private static String scheme = "https";
-	private static String host = "ossindex.net";
-	private static int port = -1; // Use default port
-	
-	/**
-	 * OSS Index ID. Special values:
-	 * 
-	 *   >0 Valid OSS Index resource ID.
-	 *   -1 OSS Index not checked
-	 *   -2 Resource not in OSS Index
-	 */
-	private long id = -1;
-	
-	/**
-	 * Required for deserialization
-	 */
-	AbstractRemoteResource()
+	private String pkgManager;
+	private String name;
+	private String version;
+
+	public PackageDependency(String pkgManager, String pkgName, String version)
 	{
-	}
-	
-	/**
-	 * 
-	 * @param id
-	 */
-	public AbstractRemoteResource(long id)
-	{
-		this.id = id;
+		this.name = pkgName;
+		this.version = version;
+		this.pkgManager = pkgManager;
 	}
 
-	/** Get the OSS Index ID.
+	/**
 	 * 
 	 * @return
 	 */
-	public long getId()
+	public String getPackageManager()
 	{
-		return id;
+		return pkgManager;
 	}
-	
-	/** Returns true if the resource exists at OSS Index
-	 * 
-	 * @return
-	 */
-	public boolean exists()
-	{
-		return id > 0;
-	}
-	
-	/** Get the base URL for REST requests.
-	 * 
-	 * @return
-	 */
-	protected static String getBaseUrl()
-	{
-		if(port >= 0)
-		{
-			return scheme + "://" + host + ":" + port;
-		}
-		else
-		{
-			return scheme + "://" + host;
-		}
-	}
-	
-	/** Get the OSS Index resource type.
-	 * 
-	 * @return
-	 */
-	protected abstract String getResourceType();
 
-	public static void setDebug(boolean b)
+	public String getName()
 	{
-		if(b)
-		{
-			scheme = "http";
-			host = "localhost";
-			port = 8080;
-		}
-		else
-		{
-			scheme = "https";
-			host = "ossindex.net";
-			port = -1; // Use default port
-		}
+		return name;
+	}
+	
+	public String getVersion()
+	{
+		return version;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString()
+	{
+		return "[" + pkgManager + "] " + name + " " + version;
 	}
 }

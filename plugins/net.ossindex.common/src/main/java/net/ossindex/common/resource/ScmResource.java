@@ -27,13 +27,15 @@
 package net.ossindex.common.resource;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.ConnectException;
 
-import org.apache.commons.codec.digest.DigestUtils;
+import net.ossindex.common.utils.PackageDependency;
+
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
@@ -41,95 +43,71 @@ import org.apache.http.util.EntityUtils;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
+
 /** Representation of the FileResource, backed by the OSS Index REST API
  * 
  * @author Ken Duck
  *
  */
 @SuppressWarnings("restriction")
-public class FileResource extends AbstractRemoteResource
+public class ScmResource extends AbstractRemoteResource
 {
-	/**
-	 * Temporary boolean for debugging purposes.
-	 */
-	private static boolean DEBUG = false;
-	
-	/**
-	 * File name. May be populated by OSS Index, but can be
-	 * overridden by local file.
-	 */
-	private String name = null;
-	
-	/**
-	 * Required for deserialization
-	 */
-	FileResource()
-	{
-	}
-	
-	public FileResource(long id)
-	{
-		super(id);
-	}
+	public String uri;
+	public String name;
+	public String description;
+	public long size;
+	public String scm_type;
+	public String requires;
+	public boolean hasVulnerability;
+	public String vulnerabilities;
+	public String references;
+	public String releases;
+	public String files;
+	public String authors;
+	public String languages;
+	// FIXME: Not loading CPE result list, which may have one of two
+	// different forms:
+	//
+	//     "cpes": [
+	//      {
+	//        "status": "none"
+	//      }
+	//    ],
+	//    
+	//    "cpes": [
+	//             {
+	//               "cpecode": "cpe:/a:jquery:jquery",
+	//               "cpe": "http://localhost:8080/v1.0/cpe/a/jquery/jquery"
+	//             }
+	//           ],
 
-	/**
-	 * 
-	 * @return
-	 */
-	public String getName()
-	{
-		return name;
-	}
-	
-	/** Override the name provided by OSS Index.
-	 * 
-	 * @param name
-	 */
-	public void setName(String name)
-	{
-		this.name = name;
-	}
 
-	/** Find an applicable resource, otherwise return null. Use a combination
-	 * of HttpClient and GSON to handle the request and response.
-	 * 
-	 * @param file
-	 * @return
-	 * @throws IOException 
-	 */
-	public static FileResource find(File file) throws IOException
+
+	@Override
+	protected String getResourceType()
 	{
-		FileResource[] resources = find(new File[] {file});
-		if(resources != null && resources.length > 0) return resources[0];
-		return null;
+		return "scm";
 	}
 	
-	/** Get multiple matching resources for the specified files. If a file
-	 * does not have a match then a null will be placed in the results array.
+	/** Get an SCM resource list matching the supplied scm IDs.
 	 * 
-	 * This is done so the user knows which result belongs with which
-	 * input file.
-	 * 
-	 * @param files
+	 * @param scmIds
 	 * @return
 	 * @throws IOException
 	 */
-	public static FileResource[] find(File[] files) throws IOException
+	public static ScmResource[] find(long[] scmIds) throws IOException
 	{
-		if(files == null || files.length == 0) return new FileResource[0];
+		if(scmIds == null || scmIds.length == 0) return new ScmResource[0];
 		
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 		StringBuilder sb = new StringBuilder(getBaseUrl());
-		sb.append("/v1.0/sha1/");
-		for(int i = 0; i < files.length; i++)
+		sb.append("/v1.0/scm/");
+		for(int i = 0; i < scmIds.length; i++)
 		{
-			File file = files[i];
 			if(i > 0) sb.append(",");
-			String sha1 = getSha1(file);
-			sb.append(sha1);
+			sb.append(scmIds[i]);
 		}
 		String requestString = sb.toString();
-		if(DEBUG) System.err.print("Request: " + requestString + "...");
 		
 		try
 		{
@@ -139,7 +117,7 @@ public class FileResource extends AbstractRemoteResource
 			Gson gson = new Gson();
 			try
 			{
-				FileResource[] resources = gson.fromJson(json, FileResource[].class);
+				ScmResource[] resources = gson.fromJson(json, ScmResource[].class);
 				return resources;
 			}
 			catch(JsonSyntaxException e)
@@ -157,37 +135,62 @@ public class FileResource extends AbstractRemoteResource
 		}
 	}
 
-	/** Get the SHA1 checksum for the file.
+
+	/** Get a list of all vulnerabilities affecting this resource.
 	 * 
 	 * @return
-	 * @throws IOException
 	 */
-	private static String getSha1(File file) throws IOException
+	public VulnerabilityResource[] getVulnerabilities() throws IOException
 	{
-		// Get the SHA1 sum for a file, then check if the MD5 is listed in the
-		// OSS Index (indicating it is third party code).
-		FileInputStream is = null;
+		if(!hasVulnerability) return new VulnerabilityResource[0];
+		
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+		
+		String requestString = getBaseUrl() + "/v1.0/scm/" + getId() + "/vulnerabilities";
+		
 		try
 		{
-			is = new FileInputStream(file);
-			return DigestUtils.shaHex(is);
+			HttpGet request = new HttpGet(requestString);
+			CloseableHttpResponse response = httpClient.execute(request);
+			String json = EntityUtils.toString(response.getEntity(), "UTF-8");
+			Gson gson = new Gson();
+			try
+			{
+				VulnerabilityResource[] resources = gson.fromJson(json, VulnerabilityResource[].class);
+				return resources;
+			}
+			catch(JsonSyntaxException e)
+			{
+				System.err.println("Exception parsing response from request '" + requestString + "'");
+				System.err.println(json);
+				
+				// Throw a connect exception so that the caller knows not to try any more.
+				throw new ConnectException(e.getMessage());
+			}
 		}
 		finally
 		{
-			if(is != null)
-			{
-				is.close();
-			}
+//			System.err.println(" done");
 		}
 	}
 
+	/** Get the SCM name
+	 * 
+	 * @return
+	 */
+	public String getName()
+	{
+		return name;
+	}
+	
 	/*
 	 * (non-Javadoc)
-	 * @see net.ossindex.common.resource.AbstractRemoteResource#getResourceType()
+	 * @see java.lang.Object#toString()
 	 */
 	@Override
-	protected String getResourceType()
+	public String toString()
 	{
-		return "file";
+		if(uri == null) return name;
+		return uri.toString();
 	}
 }

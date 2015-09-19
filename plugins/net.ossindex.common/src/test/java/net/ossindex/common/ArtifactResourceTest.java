@@ -24,101 +24,42 @@
  *	(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  *	SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.ossindex.common.resource;
+package net.ossindex.common;
 
+import static org.junit.Assert.assertTrue;
 
-/** Provides common code for OSS Index API access.
+import java.io.IOException;
+
+import net.ossindex.common.resource.AbstractRemoteResource;
+import net.ossindex.common.resource.ArtifactResource;
+import net.ossindex.common.utils.PackageDependency;
+
+import org.junit.Test;
+
+/** Test the FileResource
  * 
  * @author Ken Duck
  *
  */
-public abstract class AbstractRemoteResource
+public class ArtifactResourceTest
 {
-	/**
-	 * Bad form! Hard-coded for prototype.
-	 */
-	private static String scheme = "https";
-	private static String host = "ossindex.net";
-	private static int port = -1; // Use default port
-	
-	/**
-	 * OSS Index ID. Special values:
-	 * 
-	 *   >0 Valid OSS Index resource ID.
-	 *   -1 OSS Index not checked
-	 *   -2 Resource not in OSS Index
-	 */
-	private long id = -1;
-	
-	/**
-	 * Required for deserialization
-	 */
-	AbstractRemoteResource()
+	@Test
+	public void testAsync() throws IOException
 	{
-	}
-	
-	/**
-	 * 
-	 * @param id
-	 */
-	public AbstractRemoteResource(long id)
-	{
-		this.id = id;
+		AbstractRemoteResource.setDebug(true);
+		PackageDependency dep = new PackageDependency("npm", "async", ">0");
+		ArtifactResource resource = ArtifactResource.find(dep);
+		assertTrue(resource.getId() > 0);
+		assertTrue(resource.getName().startsWith("async-"));
 	}
 
-	/** Get the OSS Index ID.
-	 * 
-	 * @return
-	 */
-	public long getId()
-	{
-		return id;
-	}
-	
-	/** Returns true if the resource exists at OSS Index
-	 * 
-	 * @return
-	 */
-	public boolean exists()
-	{
-		return id > 0;
-	}
-	
-	/** Get the base URL for REST requests.
-	 * 
-	 * @return
-	 */
-	protected static String getBaseUrl()
-	{
-		if(port >= 0)
-		{
-			return scheme + "://" + host + ":" + port;
-		}
-		else
-		{
-			return scheme + "://" + host;
-		}
-	}
-	
-	/** Get the OSS Index resource type.
-	 * 
-	 * @return
-	 */
-	protected abstract String getResourceType();
-
-	public static void setDebug(boolean b)
-	{
-		if(b)
-		{
-			scheme = "http";
-			host = "localhost";
-			port = 8080;
-		}
-		else
-		{
-			scheme = "https";
-			host = "ossindex.net";
-			port = -1; // Use default port
-		}
-	}
+//	@Test
+//	public void testAsync() throws IOException
+//	{
+//		AbstractRemoteResource.setDebug(true);
+//		PackageDependency dep = new PackageDependency("npm", "async", ">0");
+//		ArtifactResource resource = ArtifactResource.find(dep);
+//		assertTrue(resource.getId() > 0);
+//		assertTrue(resource.getName().startsWith("async-"));
+//	}
 }
