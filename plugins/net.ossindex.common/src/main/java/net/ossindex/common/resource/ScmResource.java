@@ -26,16 +26,11 @@
  */
 package net.ossindex.common.resource;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.ConnectException;
 
-import net.ossindex.common.utils.PackageDependency;
-
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
@@ -81,6 +76,11 @@ public class ScmResource extends AbstractRemoteResource
 	//             }
 	//           ],
 
+	/**
+	 * Cache results from OSS Index for speed purposes
+	 */
+	private VulnerabilityResource[] vulnerabilityCache;
+
 
 
 	@Override
@@ -88,7 +88,7 @@ public class ScmResource extends AbstractRemoteResource
 	{
 		return "scm";
 	}
-	
+
 	/** Get an SCM resource list matching the supplied scm IDs.
 	 * 
 	 * @param scmIds
@@ -98,7 +98,7 @@ public class ScmResource extends AbstractRemoteResource
 	public static ScmResource[] find(long[] scmIds) throws IOException
 	{
 		if(scmIds == null || scmIds.length == 0) return new ScmResource[0];
-		
+
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 		StringBuilder sb = new StringBuilder(getBaseUrl());
 		sb.append("/v1.0/scm/");
@@ -108,7 +108,7 @@ public class ScmResource extends AbstractRemoteResource
 			sb.append(scmIds[i]);
 		}
 		String requestString = sb.toString();
-		
+
 		try
 		{
 			HttpGet request = new HttpGet(requestString);
@@ -124,14 +124,15 @@ public class ScmResource extends AbstractRemoteResource
 			{
 				System.err.println("Exception parsing response from request '" + requestString + "'");
 				System.err.println(json);
-				
+
 				// Throw a connect exception so that the caller knows not to try any more.
 				throw new ConnectException(e.getMessage());
 			}
 		}
 		finally
 		{
-//			System.err.println(" done");
+			httpClient.close();
+			//			System.err.println(" done");
 		}
 	}
 
@@ -142,36 +143,43 @@ public class ScmResource extends AbstractRemoteResource
 	 */
 	public VulnerabilityResource[] getVulnerabilities() throws IOException
 	{
-		if(!hasVulnerability) return new VulnerabilityResource[0];
-		
-		CloseableHttpClient httpClient = HttpClients.createDefault();
-		
-		String requestString = getBaseUrl() + "/v1.0/scm/" + getId() + "/vulnerabilities";
-		
-		try
+		if(vulnerabilityCache != null) return vulnerabilityCache;
+		if(!hasVulnerability)
 		{
-			HttpGet request = new HttpGet(requestString);
-			CloseableHttpResponse response = httpClient.execute(request);
-			String json = EntityUtils.toString(response.getEntity(), "UTF-8");
-			Gson gson = new Gson();
+			vulnerabilityCache = new VulnerabilityResource[0];
+		}
+		else
+		{
+			CloseableHttpClient httpClient = HttpClients.createDefault();
+
+			String requestString = getBaseUrl() + "/v1.0/scm/" + getId() + "/vulnerabilities";
+
 			try
 			{
-				VulnerabilityResource[] resources = gson.fromJson(json, VulnerabilityResource[].class);
-				return resources;
+				HttpGet request = new HttpGet(requestString);
+				CloseableHttpResponse response = httpClient.execute(request);
+				String json = EntityUtils.toString(response.getEntity(), "UTF-8");
+				Gson gson = new Gson();
+				try
+				{
+					vulnerabilityCache = gson.fromJson(json, VulnerabilityResource[].class);
+				}
+				catch(JsonSyntaxException e)
+				{
+					System.err.println("Exception parsing response from request '" + requestString + "'");
+					System.err.println(json);
+
+					// Throw a connect exception so that the caller knows not to try any more.
+					throw new ConnectException(e.getMessage());
+				}
 			}
-			catch(JsonSyntaxException e)
+			finally
 			{
-				System.err.println("Exception parsing response from request '" + requestString + "'");
-				System.err.println(json);
-				
-				// Throw a connect exception so that the caller knows not to try any more.
-				throw new ConnectException(e.getMessage());
+				httpClient.close();
+				//			System.err.println(" done");
 			}
 		}
-		finally
-		{
-//			System.err.println(" done");
-		}
+		return vulnerabilityCache;
 	}
 
 	/** Get the SCM name
@@ -182,7 +190,7 @@ public class ScmResource extends AbstractRemoteResource
 	{
 		return name;
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * @see java.lang.Object#toString()

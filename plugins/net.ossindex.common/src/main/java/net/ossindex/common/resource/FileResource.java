@@ -153,6 +153,7 @@ public class FileResource extends AbstractRemoteResource
 		}
 		finally
 		{
+			httpClient.close();
 //			System.err.println(" done");
 		}
 	}

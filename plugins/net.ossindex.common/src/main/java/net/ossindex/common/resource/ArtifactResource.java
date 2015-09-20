@@ -32,6 +32,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.ossindex.common.utils.PackageDependency;
+import net.ossindex.common.version.NpmVersion;
+import net.ossindex.common.version.SemanticVersion;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -42,8 +44,6 @@ import org.apache.http.util.EntityUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import com.vor.utils.version.NpmVersion;
-import com.vor.utils.version.SemanticVersion;
 
 /** Representation of the FileResource, backed by the OSS Index REST API
  * 
@@ -194,6 +194,7 @@ public class ArtifactResource extends AbstractRemoteResource implements Comparab
 		}
 		finally
 		{
+			httpClient.close();
 //			System.err.println(" done");
 		}
 	}

@@ -26,24 +26,80 @@
  */
 package net.ossindex.common.utils;
 
-/**
+import java.io.IOException;
+
+import net.ossindex.common.resource.ArtifactResource;
+import net.ossindex.common.resource.ScmResource;
+import net.ossindex.common.resource.VulnerabilityResource;
+
+/** Define a dependency from an artifact to a package/version. This
+ * class also provides mechanisms for adding additional data, such
+ * as the artifact defined by the dependency package/version, and the
+ * SCM that contains the source for the artifact.
  * 
  * @author Ken Duck
  *
  */
 public class PackageDependency
 {
+	/**
+	 * Package manager that defines this dependency
+	 */
 	private String pkgManager;
+	
+	/**
+	 * Name of the dependency
+	 */
 	private String name;
+	
+	/**
+	 * Version number of the dependency
+	 */
 	private String version;
+	
+	/**
+	 * Best match for the dependency name/version
+	 */
+	private ArtifactResource artifact;
+	
+	/**
+	 * SCM that provides sources for the artifact
+	 */
+	private ScmResource scm;
 
+	/**
+	 * Line number in the parent file that this dependency resides on
+	 */
+	private FilePosition position;
+
+	/**
+	 * 
+	 * @param line Line number in the file that defines the dependency
+	 * @param pkgManager
+	 * @param pkgName
+	 * @param version
+	 */
+	public PackageDependency(FilePosition position, String pkgManager, String pkgName, String version)
+	{
+		this.position = position;
+		this.name = pkgName;
+		this.version = version;
+		this.pkgManager = pkgManager;
+	}
+
+	/**
+	 * 
+	 * @param pkgManager
+	 * @param pkgName
+	 * @param version
+	 */
 	public PackageDependency(String pkgManager, String pkgName, String version)
 	{
 		this.name = pkgName;
 		this.version = version;
 		this.pkgManager = pkgManager;
 	}
-
+	
 	/**
 	 * 
 	 * @return
@@ -63,6 +119,23 @@ public class PackageDependency
 		return version;
 	}
 	
+	/** Get the line number of the dependency owner file that defines this dependency
+	 * 
+	 * @return
+	 */
+	public int getLine()
+	{
+		return position.getLine();
+	}
+	public int getOffset()
+	{
+		return position.getOffset();
+	}
+	public int getLength()
+	{
+		return position.getLength();
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see java.lang.Object#toString()
@@ -72,4 +145,47 @@ public class PackageDependency
 	{
 		return "[" + pkgManager + "] " + name + " " + version;
 	}
+
+	/** Set the artifact that is deemed to be the best match.
+	 * 
+	 * @param artifact
+	 */
+	public void setArtifact(ArtifactResource artifact)
+	{
+		this.artifact = artifact;
+	}
+
+	/** Set the SCM resource that is deemed to define this dependency
+	 * 
+	 * @param scmResource
+	 */
+	public void setScm(ScmResource scmResource)
+	{
+		this.scm = scmResource;
+	}
+
+	/** Get a description of the dependency
+	 * 
+	 * @return
+	 */
+	public String getDescription()
+	{
+		if(artifact != null) return artifact.getDescription();
+		return "unknown";
+	}
+
+	/**
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
+	public VulnerabilityResource[] getVulnerabilities() throws IOException
+	{
+		if(scm != null)
+		{
+			return scm.getVulnerabilities();
+		}
+		return new VulnerabilityResource[0];
+	}
+
 }
