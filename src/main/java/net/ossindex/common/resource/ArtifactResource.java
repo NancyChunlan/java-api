@@ -32,8 +32,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.ossindex.common.utils.PackageDependency;
-import net.ossindex.common.version.NpmVersion;
-import net.ossindex.common.version.SemanticVersion;
+import net.ossindex.version.IVersion;
+import net.ossindex.version.VersionFactory;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -236,7 +236,7 @@ public class ArtifactResource extends AbstractRemoteResource implements Comparab
 	 * 
 	 * @return
 	 */
-	public String getVersion()
+	public String getVersionString()
 	{
 		return version;
 	}
@@ -281,17 +281,9 @@ public class ArtifactResource extends AbstractRemoteResource implements Comparab
 	 * 
 	 * @return
 	 */
-	public SemanticVersion getSemanticVersion()
+	public IVersion getVersion()
 	{
-		if(version == null) return null;
-		if(package_manager != null)
-		{
-			switch(package_manager)
-			{
-			case "npm": return new NpmVersion(version);
-			}
-		}
-		return new SemanticVersion(version);
+		return VersionFactory.getVersionFactory().getVersion(package_manager, version);
 	}
 
 	/*
@@ -302,8 +294,8 @@ public class ArtifactResource extends AbstractRemoteResource implements Comparab
 	public int compareTo(ArtifactResource res)
 	{
 		if(res == null) return 1;
-		SemanticVersion myVersion = getSemanticVersion();
-		SemanticVersion yourVersion = res.getSemanticVersion();
+		IVersion myVersion = getVersion();
+		IVersion yourVersion = res.getVersion();
 		if(yourVersion == null) return 1;
 		if(myVersion == null) return -1;
 		return myVersion.compareTo(yourVersion);
