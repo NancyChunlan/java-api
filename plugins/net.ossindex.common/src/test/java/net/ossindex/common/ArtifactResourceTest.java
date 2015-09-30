@@ -46,7 +46,7 @@ public class ArtifactResourceTest
 	@Test
 	public void testAsync() throws IOException
 	{
-		AbstractRemoteResource.setDebug(true);
+//		AbstractRemoteResource.setDebug(true);
 		PackageDependency dep = new PackageDependency("npm", "async", ">0");
 		ArtifactResource resource = ArtifactResource.find(dep);
 		assertTrue(resource.getId() > 0);

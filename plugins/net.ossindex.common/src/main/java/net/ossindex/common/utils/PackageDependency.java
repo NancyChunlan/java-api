@@ -53,6 +53,11 @@ public class PackageDependency
 	private String name;
 	
 	/**
+	 * In package systems that have an extra field for package definition.
+	 */
+	private String groupId;
+	
+	/**
 	 * Version number of the dependency
 	 */
 	private String version;
@@ -102,6 +107,20 @@ public class PackageDependency
 	
 	/**
 	 * 
+	 * @param pkgManager
+	 * @param pkgName
+	 * @param version
+	 */
+	public PackageDependency(String pkgManager, String groupId, String artifactId, String version)
+	{
+		this.groupId = groupId;
+		this.name = artifactId;
+		this.version = version;
+		this.pkgManager = pkgManager;
+	}
+
+	/** Get the package manager name
+	 * 
 	 * @return
 	 */
 	public String getPackageManager()
@@ -109,9 +128,22 @@ public class PackageDependency
 		return pkgManager;
 	}
 
+	/** Get the artifact id/name
+	 * 
+	 * @return
+	 */
 	public String getName()
 	{
 		return name;
+	}
+	
+	/** Get the group id/name
+	 * 
+	 * @return
+	 */
+	public String getGroupId()
+	{
+		return groupId;
 	}
 	
 	public String getVersion()
@@ -155,13 +187,22 @@ public class PackageDependency
 		this.artifact = artifact;
 	}
 
-	/** Set the SCM resource that is deemed to define this dependency
+	/** Set the SCM resource that is deemed to be the dependency source
 	 * 
 	 * @param scmResource
 	 */
 	public void setScm(ScmResource scmResource)
 	{
 		this.scm = scmResource;
+	}
+	
+	/** Get the SCM resource that is deemed to be the dependency source
+	 * 
+	 * @return
+	 */
+	public ScmResource getScm()
+	{
+		return this.scm;
 	}
 
 	/** Get a description of the dependency
@@ -188,4 +229,12 @@ public class PackageDependency
 		return new VulnerabilityResource[0];
 	}
 
+	/** Get the simple fully descriptive ID for the package
+	 * 
+	 * @return
+	 */
+	public String getId()
+	{
+		return groupId + ":" + name + ":" + version;
+	}
 }

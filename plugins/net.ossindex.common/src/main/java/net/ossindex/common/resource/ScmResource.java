@@ -47,19 +47,19 @@ import com.google.gson.JsonSyntaxException;
 @SuppressWarnings("restriction")
 public class ScmResource extends AbstractRemoteResource
 {
-	public String uri;
-	public String name;
-	public String description;
-	public long size;
-	public String scm_type;
-	public String requires;
-	public boolean hasVulnerability;
-	public String vulnerabilities;
-	public String references;
-	public String releases;
-	public String files;
-	public String authors;
-	public String languages;
+	private String uri;
+	private String name;
+	private String description;
+	private long size;
+	private String scm_type;
+	private String requires;
+	private boolean hasVulnerability;
+	private String vulnerabilities;
+	private String references;
+	private String releases;
+	private String files;
+	private String authors;
+	private String languages;
 	// FIXME: Not loading CPE result list, which may have one of two
 	// different forms:
 	//

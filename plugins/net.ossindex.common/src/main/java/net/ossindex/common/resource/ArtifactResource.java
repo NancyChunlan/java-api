@@ -56,7 +56,7 @@ public class ArtifactResource extends AbstractRemoteResource implements Comparab
 	/**
 	 * Temporary boolean for debugging purposes.
 	 */
-	private static boolean DEBUG = true;
+	private static boolean DEBUG = false;
 	
 	/**
 	 * Package name

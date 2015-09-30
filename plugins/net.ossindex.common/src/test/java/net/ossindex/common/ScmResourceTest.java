@@ -48,7 +48,7 @@ public class ScmResourceTest
 	@Test
 	public void testSingleScmFind() throws IOException
 	{
-		AbstractRemoteResource.setDebug(true);
+//		AbstractRemoteResource.setDebug(true);
 		ScmResource[] resources = ScmResource.find(new long[] {296375846});
 		assertNotNull(resources);
 		assertEquals(1, resources.length);
@@ -59,7 +59,7 @@ public class ScmResourceTest
 	@Test
 	public void testDoubleScmFind() throws IOException
 	{
-		AbstractRemoteResource.setDebug(true);
+//		AbstractRemoteResource.setDebug(true);
 		ScmResource[] resources = ScmResource.find(new long[] {296375846, 290424103});
 		assertNotNull(resources);
 		assertEquals(2, resources.length);
@@ -72,7 +72,7 @@ public class ScmResourceTest
 	@Test
 	public void testGetVulnerabilities() throws IOException
 	{
-		AbstractRemoteResource.setDebug(true);
+//		AbstractRemoteResource.setDebug(true);
 		ScmResource[] resources = ScmResource.find(new long[] {296375846});
 		assertNotNull(resources);
 		assertEquals(1, resources.length);

@@ -26,6 +26,10 @@
  */
 package net.ossindex.common.resource;
 
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+
 
 /** Provides common code for OSS Index API access.
  * 
@@ -49,6 +53,13 @@ public abstract class AbstractRemoteResource
 	 *   -2 Resource not in OSS Index
 	 */
 	private long id = -1;
+	
+	static
+	{
+		// Default log4j configuration. Hides configuration warnings.
+		BasicConfigurator.configure();
+		Logger.getRootLogger().setLevel(Level.WARN);
+	}
 	
 	/**
 	 * Required for deserialization
