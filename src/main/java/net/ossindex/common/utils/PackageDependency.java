@@ -157,15 +157,21 @@ public class PackageDependency
 	 */
 	public int getLine()
 	{
-		return position.getLine();
+		if(position != null)
+			return position.getLine();
+		return 0;
 	}
 	public int getOffset()
 	{
-		return position.getOffset();
+		if(position != null)
+			return position.getOffset();
+		return 0;
 	}
 	public int getLength()
 	{
-		return position.getLength();
+		if(position != null)
+			return position.getLength();
+		return 0;
 	}
 
 	/*
