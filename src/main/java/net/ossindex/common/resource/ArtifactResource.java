@@ -57,81 +57,82 @@ public class ArtifactResource extends AbstractRemoteResource implements Comparab
 	 * Temporary boolean for debugging purposes.
 	 */
 	private static boolean DEBUG = false;
-	
+
 	/**
 	 * Package name
 	 */
 	private String name;
-	
+
 	/**
 	 * Version
 	 */
 	private String version;
-	
+
 	/**
 	 * Package description
 	 */
 	private String description;
-	
+
 	/**
 	 * Package manager name
 	 */
 	private String package_manager;
-	
+
 	/**
 	 * URI for the SCM
 	 */
 	private String scm;
-	
+
 	/**
 	 * SCM id
 	 */
 	private long scm_id;
-	
+
 	/**
 	 * URL for package download
 	 */
 	private String url;
-	
+
 	/**
 	 * REST API URL to get artifact details
 	 */
 	private String details;
-	
+
 	/**
 	 * REST API URL to get artifact dependencies
 	 */
 	private String dependencies;
-	
+
 	/**
 	 * Search strings used to retrieve this artifact
 	 */
 	private String[] search;
-	
+
 	/**
 	 * 
 	 */
-	private static final Pattern packagePattern = Pattern.compile("^(.*)-[0-9]+\\.[0-9]+\\.[0-9]");
-	
+	private static final Pattern packagePattern3 = Pattern.compile("^(.*)-[0-9]+\\.[0-9]+\\.[0-9]+");
+	private static final Pattern packagePattern2 = Pattern.compile("^(.*)-[0-9]+\\.[0-9]+");
+
 	/**
 	 * Required for deserialization
 	 */
 	ArtifactResource()
 	{
 	}
-	
+
 	public ArtifactResource(long id)
 	{
 		super(id);
 	}
-	
+
 	public static ArtifactResource find(PackageDependency dep) throws IOException
 	{
 		ArtifactResource[] resources = find(new PackageDependency[] {dep});
 		if(resources != null && resources.length > 0) return resources[0];
 		return null;
 	}
-	
+
 	/** Get multiple matching resources for the specified files. If a file
 	 * does not have a match then a null will be placed in the results array.
 	 * 
@@ -145,11 +146,11 @@ public class ArtifactResource extends AbstractRemoteResource implements Comparab
 	public static ArtifactResource[] find(PackageDependency[] pkgDeps) throws IOException
 	{
 		if(pkgDeps == null || pkgDeps.length == 0) return new ArtifactResource[0];
-		
+
 		CloseableHttpClient httpClient = HttpClients.createDefault();
-		
+
 		String reqPath = "/v1.0/search/artifact/";
-		
+
 		StringBuilder sb = new StringBuilder();
 		sb.append("[");
 		for(int i = 0; i < pkgDeps.length; i++)
@@ -163,18 +164,18 @@ public class ArtifactResource extends AbstractRemoteResource implements Comparab
 			sb.append("}");
 		}
 		sb.append("]");
-		
+
 		if(DEBUG)
 		{
 			System.err.println("Request: " + reqPath + "...");
 			System.err.println("  DATA: " + sb.toString());
 		}
-		
+
 		try
 		{
 			HttpPost request = new HttpPost(getBaseUrl() + reqPath);
 			request.setEntity(new StringEntity(sb.toString()));
-			
+
 			CloseableHttpResponse response = httpClient.execute(request);
 			String json = EntityUtils.toString(response.getEntity(), "UTF-8");
 			Gson gson = new Gson();
@@ -187,7 +188,7 @@ public class ArtifactResource extends AbstractRemoteResource implements Comparab
 			{
 				System.err.println("Exception parsing response from request '" + reqPath + "'");
 				System.err.println(json);
-				
+
 				// Throw a connect exception so that the caller knows not to try any more.
 				throw new ConnectException(e.getMessage());
 			}
@@ -195,7 +196,7 @@ public class ArtifactResource extends AbstractRemoteResource implements Comparab
 		finally
 		{
 			httpClient.close();
-//			System.err.println(" done");
+			//			System.err.println(" done");
 		}
 	}
 
@@ -217,21 +218,43 @@ public class ArtifactResource extends AbstractRemoteResource implements Comparab
 	{
 		return name;
 	}
-	
+
 	/**
 	 * 
 	 * @return
 	 */
 	public String getPackageName()
 	{
-		Matcher m = packagePattern.matcher(name);
+		// Best matching is done by the expected version
+		if(version != null)
+		{
+			int index = name.lastIndexOf(version);
+			if(index > 0)
+			{
+				String result = name.substring(0, index);
+				while(result.endsWith("-")) result = result.substring(0, result.length() - 1);
+				return result;
+			}
+		}
+		
+		// Fall back that should likely never happen
+		Matcher m = packagePattern3.matcher(name);
 		if(m.find())
 		{
 			return m.group(1);
 		}
+		
+		// Fall back that should likely never happen
+		m = packagePattern2.matcher(name);
+		if(m.find())
+		{
+			return m.group(1);
+		}
+		
+		// Everything failed
 		return name;
 	}
-	
+
 	/**
 	 * 
 	 * @return
@@ -240,7 +263,7 @@ public class ArtifactResource extends AbstractRemoteResource implements Comparab
 	{
 		return version;
 	}
-	
+
 	/**
 	 * 
 	 * @return
@@ -249,7 +272,7 @@ public class ArtifactResource extends AbstractRemoteResource implements Comparab
 	{
 		return description;
 	}
-	
+
 	/**
 	 * 
 	 * @return
@@ -258,7 +281,7 @@ public class ArtifactResource extends AbstractRemoteResource implements Comparab
 	{
 		return package_manager;
 	}
-	
+
 	/**
 	 * 
 	 * @return
@@ -267,7 +290,7 @@ public class ArtifactResource extends AbstractRemoteResource implements Comparab
 	{
 		return search;
 	}
-	
+
 	/**
 	 * 
 	 * @return
@@ -276,7 +299,7 @@ public class ArtifactResource extends AbstractRemoteResource implements Comparab
 	{
 		return scm_id;
 	}
-	
+
 	/** Get the semantic version for the resource.
 	 * 
 	 * @return
