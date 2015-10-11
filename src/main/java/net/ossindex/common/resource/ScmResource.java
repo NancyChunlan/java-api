@@ -27,16 +27,12 @@
 package net.ossindex.common.resource;
 
 import java.io.IOException;
-import java.net.ConnectException;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
+import net.ossindex.common.ResourceFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
+import com.google.gson.reflect.TypeToken;
 
 
 /** Representation of the FileResource, backed by the OSS Index REST API
@@ -89,53 +85,6 @@ public class ScmResource extends AbstractRemoteResource
 		return "scm";
 	}
 
-	/** Get an SCM resource list matching the supplied scm IDs.
-	 * 
-	 * @param scmIds
-	 * @return
-	 * @throws IOException
-	 */
-	public static ScmResource[] find(long[] scmIds) throws IOException
-	{
-		if(scmIds == null || scmIds.length == 0) return new ScmResource[0];
-
-		CloseableHttpClient httpClient = HttpClients.createDefault();
-		StringBuilder sb = new StringBuilder(getBaseUrl());
-		sb.append("/v1.0/scm/");
-		for(int i = 0; i < scmIds.length; i++)
-		{
-			if(i > 0) sb.append(",");
-			sb.append(scmIds[i]);
-		}
-		String requestString = sb.toString();
-
-		try
-		{
-			HttpGet request = new HttpGet(requestString);
-			CloseableHttpResponse response = httpClient.execute(request);
-			String json = EntityUtils.toString(response.getEntity(), "UTF-8");
-			Gson gson = new Gson();
-			try
-			{
-				ScmResource[] resources = gson.fromJson(json, ScmResource[].class);
-				return resources;
-			}
-			catch(JsonSyntaxException e)
-			{
-				System.err.println("Exception parsing response from request '" + requestString + "'");
-				System.err.println(json);
-
-				// Throw a connect exception so that the caller knows not to try any more.
-				throw new ConnectException(e.getMessage());
-			}
-		}
-		finally
-		{
-			httpClient.close();
-			//			System.err.println(" done");
-		}
-	}
-
 
 	/** Get a list of all vulnerabilities affecting this resource.
 	 * 
@@ -150,34 +99,9 @@ public class ScmResource extends AbstractRemoteResource
 		}
 		else
 		{
-			CloseableHttpClient httpClient = HttpClients.createDefault();
-
-			String requestString = getBaseUrl() + "/v1.0/scm/" + getId() + "/vulnerabilities";
-
-			try
-			{
-				HttpGet request = new HttpGet(requestString);
-				CloseableHttpResponse response = httpClient.execute(request);
-				String json = EntityUtils.toString(response.getEntity(), "UTF-8");
-				Gson gson = new Gson();
-				try
-				{
-					vulnerabilityCache = gson.fromJson(json, VulnerabilityResource[].class);
-				}
-				catch(JsonSyntaxException e)
-				{
-					System.err.println("Exception parsing response from request '" + requestString + "'");
-					System.err.println(json);
-
-					// Throw a connect exception so that the caller knows not to try any more.
-					throw new ConnectException(e.getMessage());
-				}
-			}
-			finally
-			{
-				httpClient.close();
-				//			System.err.println(" done");
-			}
+			TypeToken<ArrayList<VulnerabilityResource>> type = new TypeToken<ArrayList<VulnerabilityResource>>() {};
+			List<VulnerabilityResource> results = ResourceFactory.getResourceFactory().getResources(type, "/v1.0/scm/" + getId() + "/vulnerabilities");
+			vulnerabilityCache = results.toArray(new VulnerabilityResource[results.size()]);
 		}
 		return vulnerabilityCache;
 	}

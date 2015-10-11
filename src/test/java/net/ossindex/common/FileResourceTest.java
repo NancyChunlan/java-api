@@ -55,7 +55,7 @@ public class FileResourceTest
 	public void testEmptyFile() throws IOException
 	{
 		File empty = File.createTempFile("ossindex.", ".test");
-		FileResource resource = FileResource.find(empty);
+		FileResource resource = ResourceFactory.getResourceFactory().findFileResource(empty);
 		assertTrue(resource.getId() > 0);
 		assertNotNull(resource.getName());
 	}
@@ -75,7 +75,7 @@ public class FileResourceTest
 		FileWriter out = new FileWriter(unique);
 		out.append(randomString);
 		out.close();
-		FileResource resource = FileResource.find(unique);
+		FileResource resource = ResourceFactory.getResourceFactory().findFileResource(unique);
 		assertTrue(resource.getId() < 0);
 		assertNull(resource.getName());
 	}

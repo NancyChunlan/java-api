@@ -32,7 +32,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
-import net.ossindex.common.resource.AbstractRemoteResource;
 import net.ossindex.common.resource.ScmResource;
 import net.ossindex.common.resource.VulnerabilityResource;
 
@@ -49,7 +48,7 @@ public class ScmResourceTest
 	public void testSingleScmFind() throws IOException
 	{
 //		AbstractRemoteResource.setDebug(true);
-		ScmResource[] resources = ScmResource.find(new long[] {296375846});
+		ScmResource[] resources = ResourceFactory.getResourceFactory().findScmResources(new long[] {296375846});
 		assertNotNull(resources);
 		assertEquals(1, resources.length);
 		assertTrue(resources[0].getId() > 0);
@@ -60,7 +59,7 @@ public class ScmResourceTest
 	public void testDoubleScmFind() throws IOException
 	{
 //		AbstractRemoteResource.setDebug(true);
-		ScmResource[] resources = ScmResource.find(new long[] {296375846, 290424103});
+		ScmResource[] resources = ResourceFactory.getResourceFactory().findScmResources(new long[] {296375846, 290424103});
 		assertNotNull(resources);
 		assertEquals(2, resources.length);
 		assertTrue(resources[0].getId() > 0);
@@ -73,7 +72,7 @@ public class ScmResourceTest
 	public void testGetVulnerabilities() throws IOException
 	{
 //		AbstractRemoteResource.setDebug(true);
-		ScmResource[] resources = ScmResource.find(new long[] {296375846});
+		ScmResource[] resources = ResourceFactory.getResourceFactory().findScmResources(new long[] {296375846});
 		assertNotNull(resources);
 		assertEquals(1, resources.length);
 		assertTrue(resources[0].getId() > 0);

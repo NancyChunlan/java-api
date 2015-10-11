@@ -26,38 +26,19 @@
  */
 package net.ossindex.common.resource;
 
-import java.io.IOException;
-import java.net.ConnectException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import net.ossindex.common.utils.PackageDependency;
 import net.ossindex.version.IVersion;
 import net.ossindex.version.VersionFactory;
-
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 
 /** Representation of the FileResource, backed by the OSS Index REST API
  * 
  * @author Ken Duck
  *
  */
-@SuppressWarnings("restriction")
 public class ArtifactResource extends AbstractRemoteResource implements Comparable<ArtifactResource>
 {
-	/**
-	 * Temporary boolean for debugging purposes.
-	 */
-	private static boolean DEBUG = false;
-
 	/**
 	 * Package name
 	 */
@@ -124,85 +105,6 @@ public class ArtifactResource extends AbstractRemoteResource implements Comparab
 	public ArtifactResource(long id)
 	{
 		super(id);
-	}
-
-	public static ArtifactResource find(PackageDependency dep) throws IOException
-	{
-		ArtifactResource[] resources = find(new PackageDependency[] {dep});
-		if(resources != null && resources.length > 0) return resources[0];
-		return null;
-	}
-
-	/** Get multiple matching resources for the specified files. If a file
-	 * does not have a match then a null will be placed in the results array.
-	 * 
-	 * This is done so the user knows which result belongs with which
-	 * input file.
-	 * 
-	 * @param files
-	 * @return
-	 * @throws IOException
-	 */
-	public static ArtifactResource[] find(PackageDependency[] pkgDeps) throws IOException
-	{
-		if(pkgDeps == null || pkgDeps.length == 0) return new ArtifactResource[0];
-
-		CloseableHttpClient httpClient = HttpClients.createDefault();
-
-		String reqPath = "/v1.0/search/artifact/";
-
-		StringBuilder sb = new StringBuilder();
-		sb.append("[");
-		for(int i = 0; i < pkgDeps.length; i++)
-		{
-			PackageDependency dep = pkgDeps[i];
-			if(i > 0) sb.append(",");
-			sb.append("{");
-			sb.append("\"pm\": \"" + dep.getPackageManager() + "\",");
-			sb.append("\"name\": \"" + dep.getName() + "\",");
-			sb.append("\"version\": \"" + dep.getVersion() + "\"");
-			sb.append("}");
-		}
-		sb.append("]");
-
-		if(DEBUG)
-		{
-			System.err.println("Request: " + reqPath + "...");
-			System.err.println("  DATA: " + sb.toString());
-		}
-
-		try
-		{
-			HttpPost request = new HttpPost(getBaseUrl() + reqPath);
-			request.setEntity(new StringEntity(sb.toString()));
-
-			CloseableHttpResponse response = httpClient.execute(request);
-			int code = response.getStatusLine().getStatusCode();
-			if(code < 200 || code > 299)
-			{
-				throw new ConnectException(response.getStatusLine().getReasonPhrase() + " (" + code + ")");
-			}
-			String json = EntityUtils.toString(response.getEntity(), "UTF-8");
-			Gson gson = new Gson();
-			try
-			{
-				ArtifactResource[] resources = gson.fromJson(json, ArtifactResource[].class);
-				return resources;
-			}
-			catch(JsonSyntaxException e)
-			{
-				System.err.println("Exception parsing response from request '" + reqPath + "'");
-				System.err.println(json);
-
-				// Throw a connect exception so that the caller knows not to try any more.
-				throw new ConnectException(e.getMessage());
-			}
-		}
-		finally
-		{
-			httpClient.close();
-			//			System.err.println(" done");
-		}
 	}
 
 	/*

@@ -47,7 +47,7 @@ public class ArtifactResourceTest
 	{
 //		AbstractRemoteResource.setDebug(true);
 		PackageDependency dep = new PackageDependency("npm", "async", ">0");
-		ArtifactResource resource = ArtifactResource.find(dep);
+		ArtifactResource resource = ResourceFactory.getResourceFactory().findArtifactResource(dep);
 		assertTrue(resource.getId() > 0);
 		assertTrue(resource.getName().startsWith("async-"));
 	}
@@ -57,7 +57,7 @@ public class ArtifactResourceTest
 	{
 //		AbstractRemoteResource.setDebug(true);
 		PackageDependency dep = new PackageDependency("maven", "commons-lang3", "3.4");
-		ArtifactResource[] resources = ArtifactResource.find(new PackageDependency[] {dep});
+		ArtifactResource[] resources = ResourceFactory.getResourceFactory().findArtifactResources(new PackageDependency[] {dep});
 		for (ArtifactResource resource : resources) {
 			assertTrue(resource.getId() > 0);
 			assertTrue(resource.getName().startsWith("commons-lang3"));
@@ -71,7 +71,7 @@ public class ArtifactResourceTest
 	{
 //		AbstractRemoteResource.setDebug(true);
 		PackageDependency dep = new PackageDependency("maven", "java-semver", "0.9.0");
-		ArtifactResource[] resources = ArtifactResource.find(new PackageDependency[] {dep});
+		ArtifactResource[] resources = ResourceFactory.getResourceFactory().findArtifactResources(new PackageDependency[] {dep});
 		for (ArtifactResource resource : resources) {
 			assertTrue(resource.getId() > 0);
 			assertTrue(resource.getName().startsWith("java-semver"));
@@ -85,7 +85,7 @@ public class ArtifactResourceTest
 	{
 //		AbstractRemoteResource.setDebug(true);
 		PackageDependency dep = new PackageDependency("maven", "slf4j-api", "1.7.12");
-		ArtifactResource[] resources = ArtifactResource.find(new PackageDependency[] {dep});
+		ArtifactResource[] resources = ResourceFactory.getResourceFactory().findArtifactResources(new PackageDependency[] {dep});
 		for (ArtifactResource resource : resources) {
 			assertTrue(resource.getId() > 0);
 			assertTrue(resource.getName().startsWith("slf4j-api"));
@@ -101,7 +101,7 @@ public class ArtifactResourceTest
 		PackageDependency dep1 = new PackageDependency("maven", "slf4j-api", "1.7.12");
 		PackageDependency dep2 = new PackageDependency("maven", "java-semver", "0.9.0");
 		PackageDependency dep3 = new PackageDependency("maven", "commons-lang3", "3.4");
-		ArtifactResource[] resources = ArtifactResource.find(new PackageDependency[] {dep1, dep2, dep3});
+		ArtifactResource[] resources = ResourceFactory.getResourceFactory().findArtifactResources(new PackageDependency[] {dep1, dep2, dep3});
 		for (ArtifactResource resource : resources) {
 			assertTrue(resource.getId() > 0);
 			if(resource.getName().startsWith("slf4j-api"))

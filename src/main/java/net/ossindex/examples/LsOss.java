@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
+import net.ossindex.common.ResourceFactory;
 import net.ossindex.common.resource.FileResource;
 
 /** LsOss lists all of the open source files within a given list
@@ -103,7 +104,7 @@ public class LsOss
 		// files list. The result array is the same length as the request
 		// array. Null entries in the result array indicate files that were
 		// not found within the OSS Index database.
-		FileResource[] resources = FileResource.find(files);
+		FileResource[] resources = ResourceFactory.getResourceFactory().findFileResources(files);
 		
 		// Very blunt error handling.
 		if(resources == null)

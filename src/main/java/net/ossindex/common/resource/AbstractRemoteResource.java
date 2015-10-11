@@ -38,12 +38,6 @@ import org.apache.log4j.Logger;
  */
 public abstract class AbstractRemoteResource
 {
-	/**
-	 * Bad form! Hard-coded for prototype.
-	 */
-	private static String scheme = "https";
-	private static String host = "ossindex.net";
-	private static int port = -1; // Use default port
 	
 	/**
 	 * OSS Index ID. Special values:
@@ -95,41 +89,10 @@ public abstract class AbstractRemoteResource
 		return id > 0;
 	}
 	
-	/** Get the base URL for REST requests.
-	 * 
-	 * @return
-	 */
-	protected static String getBaseUrl()
-	{
-		if(port >= 0)
-		{
-			return scheme + "://" + host + ":" + port;
-		}
-		else
-		{
-			return scheme + "://" + host;
-		}
-	}
-	
 	/** Get the OSS Index resource type.
 	 * 
 	 * @return
 	 */
 	protected abstract String getResourceType();
 
-	public static void setDebug(boolean b)
-	{
-		if(b)
-		{
-			scheme = "http";
-			host = "localhost";
-			port = 8080;
-		}
-		else
-		{
-			scheme = "https";
-			host = "ossindex.net";
-			port = -1; // Use default port
-		}
-	}
 }

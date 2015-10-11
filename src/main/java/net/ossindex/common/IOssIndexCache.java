@@ -24,66 +24,15 @@
  *	(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  *	SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.ossindex.common.resource;
+package net.ossindex.common;
 
-
-/** Representation of the FileResource, backed by the OSS Index REST API
+/** Load on the server is reduced by caching data wherever possible. This
+ * interface allows for multiple cache implementations, depending on the use case.
  * 
  * @author Ken Duck
  *
  */
-@SuppressWarnings("restriction")
-public class FileResource extends AbstractRemoteResource
+public interface IOssIndexCache
 {
-	/**
-	 * Temporary boolean for debugging purposes.
-	 */
-	private static boolean DEBUG = false;
-	
-	/**
-	 * File name. May be populated by OSS Index, but can be
-	 * overridden by local file.
-	 */
-	private String name = null;
-	
-	/**
-	 * Required for deserialization
-	 */
-	FileResource()
-	{
-	}
-	
-	public FileResource(long id)
-	{
-		super(id);
-	}
 
-	/**
-	 * 
-	 * @return
-	 */
-	public String getName()
-	{
-		return name;
-	}
-	
-	/** Override the name provided by OSS Index.
-	 * 
-	 * @param name
-	 */
-	public void setName(String name)
-	{
-		this.name = name;
-	}
-
-
-	/*
-	 * (non-Javadoc)
-	 * @see net.ossindex.common.resource.AbstractRemoteResource#getResourceType()
-	 */
-	@Override
-	protected String getResourceType()
-	{
-		return "file";
-	}
 }
