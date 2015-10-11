@@ -177,6 +177,11 @@ public class ArtifactResource extends AbstractRemoteResource implements Comparab
 			request.setEntity(new StringEntity(sb.toString()));
 
 			CloseableHttpResponse response = httpClient.execute(request);
+			int code = response.getStatusLine().getStatusCode();
+			if(code < 200 || code > 299)
+			{
+				throw new ConnectException(response.getStatusLine().getReasonPhrase() + " (" + code + ")");
+			}
 			String json = EntityUtils.toString(response.getEntity(), "UTF-8");
 			Gson gson = new Gson();
 			try
