@@ -24,39 +24,78 @@
  *	(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  *	SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.ossindex.common;
+package net.ossindex.common.cache;
 
-/** Load on the server is reduced by caching data wherever possible. This
- * interface allows for multiple cache implementations, depending on the use case.
+import java.io.File;
+import java.util.concurrent.ConcurrentNavigableMap;
+
+import net.ossindex.common.IOssIndexCache;
+
+import org.mapdb.DB;
+import org.mapdb.DBMaker;
+
+/** An implementation of IOssIndexCache that uses MapDb as a back end.
  * 
  * @author Ken Duck
  *
  */
-public interface IOssIndexCache
+public class MapDbCache implements IOssIndexCache
 {
-
-	/** Cache the specified query
-	 * 
-	 * @param requestString
-	 * @param json
-	 */
-	void cache(String requestString, String json);
-
-	/** Get cached results, if they are available
-	 * 
-	 * @param requestString
-	 * @return
-	 */
-	String get(String requestString);
-
-	/**
-	 * Commit any recent changes into the cache
-	 */
-	void commit();
+	private DB db;
+	private ConcurrentNavigableMap<String,String> map;
 	
-	/**
-	 * Ensure that the cache persists if required
+	/** Create a cache at the specified location
+	 * 
+	 * @param root
 	 */
-	void close();
+	public MapDbCache(File root)
+	{
+		db = DBMaker.fileDB(new File(root, "ossindex.cache"))
+		        .closeOnJvmShutdown()
+		        .make();
+		map = db.treeMap("queryCache");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.ossindex.common.IOssIndexCache#cache(java.lang.String, java.lang.String)
+	 */
+	@Override
+	public void cache(String requestString, String json)
+	{
+		map.put(requestString, json);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.ossindex.common.IOssIndexCache#get(java.lang.String)
+	 */
+	@Override
+	public String get(String requestString)
+	{
+		return map.get(requestString);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.ossindex.common.IOssIndexCache#commit()
+	 */
+	@Override
+	public void commit()
+	{
+		db.commit();
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.ossindex.common.IOssIndexCache#close()
+	 */
+	@Override
+	public void close()
+	{
+		db.commit();
+		db.compact();
+		db.close();
+	}
 
 }
