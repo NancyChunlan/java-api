@@ -418,24 +418,45 @@ public class ResourceFactory
 	private String doPost(String requestString, String data) throws IOException
 	{
 		String json = null;
-		HttpPost request = new HttpPost(requestString);
-		request.setEntity(new StringEntity(data));
 
-		CloseableHttpClient httpClient = HttpClients.createDefault();
-		try
+		String cacheId = requestString + "::" + data;
+		
+		// Is there a cached value?
+		if(cache != null)
 		{
-			CloseableHttpResponse response = httpClient.execute(request);
-			int code = response.getStatusLine().getStatusCode();
-			if(code < 200 || code > 299)
-			{
-				throw new ConnectException(response.getStatusLine().getReasonPhrase() + " (" + code + ")");
-			}
-			json = EntityUtils.toString(response.getEntity(), "UTF-8");
+			json = cache.get(cacheId);
 		}
-		finally
+
+		// Not cached
+		if(json == null)
 		{
-			httpClient.close();
-			//			System.err.println(" done");
+			HttpPost request = new HttpPost(requestString);
+			request.setEntity(new StringEntity(data));
+
+			CloseableHttpClient httpClient = HttpClients.createDefault();
+			try
+			{
+				CloseableHttpResponse response = httpClient.execute(request);
+				int code = response.getStatusLine().getStatusCode();
+				if(code < 200 || code > 299)
+				{
+					throw new ConnectException(response.getStatusLine().getReasonPhrase() + " (" + code + ")");
+				}
+				json = EntityUtils.toString(response.getEntity(), "UTF-8");
+			}
+			finally
+			{
+				httpClient.close();
+				//			System.err.println(" done");
+			}
+
+			if(json != null)
+			{
+				if(cache != null)
+				{
+					cache.cache(cacheId, json);
+				}
+			}
 		}
 		return json;
 	}
