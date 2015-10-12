@@ -202,6 +202,15 @@ public class PackageDependency
 		this.scm = scmResource;
 	}
 	
+	/** Get the artifact for this dependency
+	 * 
+	 * @return
+	 */
+	public ArtifactResource getArtifact()
+	{
+		return artifact;
+	}
+	
 	/** Get the SCM resource that is deemed to be the dependency source
 	 * 
 	 * @return

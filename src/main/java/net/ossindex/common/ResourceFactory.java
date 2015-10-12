@@ -35,6 +35,7 @@ import java.util.List;
 import net.ossindex.common.resource.AbstractRemoteResource;
 import net.ossindex.common.resource.ArtifactResource;
 import net.ossindex.common.resource.FileResource;
+import net.ossindex.common.resource.PackageResource;
 import net.ossindex.common.resource.ScmResource;
 import net.ossindex.common.utils.PackageDependency;
 
@@ -196,13 +197,17 @@ public class ResourceFactory
 			System.err.println("  DATA: " + sb.toString());
 		}
 
-		String requestString = getBaseUrl() + reqPath;
+		String requestString = reqPath;
 		String data = sb.toString();
 		String json = doPost(requestString, data);
 		Gson gson = new Gson();
 		try
 		{
 			ArtifactResource[] resources = gson.fromJson(json, ArtifactResource[].class);
+
+			// Preemptively cache the individual queries for these resources.
+			cacheResources(resources);
+
 			return resources;
 		}
 		catch(JsonSyntaxException e)
@@ -243,7 +248,7 @@ public class ResourceFactory
 	{
 		if(files == null || files.length == 0) return new FileResource[0];
 
-		StringBuilder sb = new StringBuilder(getBaseUrl());
+		StringBuilder sb = new StringBuilder();
 		sb.append("/v1.0/sha1/");
 		for(int i = 0; i < files.length; i++)
 		{
@@ -255,11 +260,15 @@ public class ResourceFactory
 		String requestString = sb.toString();
 		if(DEBUG) System.err.print("Request: " + requestString + "...");
 
-		String json = doGet(requestString);
+		String json = doGetArray(requestString);
 		Gson gson = new Gson();
 		try
 		{
 			FileResource[] resources = gson.fromJson(json, FileResource[].class);
+
+			// Preemptively cache the individual queries for these resources.
+			cacheResources(resources);
+
 			return resources;
 		}
 		catch(JsonSyntaxException e)
@@ -306,7 +315,7 @@ public class ResourceFactory
 	{
 		if(scmIds == null || scmIds.length == 0) return new ScmResource[0];
 
-		StringBuilder sb = new StringBuilder(getBaseUrl());
+		StringBuilder sb = new StringBuilder();
 		sb.append("/v1.0/scm/");
 		for(int i = 0; i < scmIds.length; i++)
 		{
@@ -315,21 +324,28 @@ public class ResourceFactory
 		}
 		String requestString = sb.toString();
 
-		String json = doGet(requestString);
-		Gson gson = new Gson();
-		try
+		String json = doGetArray(requestString);
+		if(json != null)
 		{
-			ScmResource[] resources = gson.fromJson(json, ScmResource[].class);
-			return resources;
-		}
-		catch(JsonSyntaxException e)
-		{
-			System.err.println("Exception parsing response from request '" + requestString + "'");
-			System.err.println(json);
+			Gson gson = new Gson();
+			try
+			{
+				ScmResource[] resources = gson.fromJson(json, ScmResource[].class);
 
-			// Throw a connect exception so that the caller knows not to try any more.
-			throw new ConnectException(e.getMessage());
+				// Preemptively cache the individual queries for these resources.
+				cacheResources(resources);
+				return resources;
+			}
+			catch(JsonSyntaxException e)
+			{
+				System.err.println("Exception parsing response from request '" + requestString + "'");
+				System.err.println(json);
+
+				// Throw a connect exception so that the caller knows not to try any more.
+				throw new ConnectException(e.getMessage());
+			}
 		}
+		return null;
 	}
 
 	/** Build resources out of the results of the specified query.
@@ -342,9 +358,9 @@ public class ResourceFactory
 	{
 		List<T> results = null;
 
-		String requestString = getBaseUrl() + query;
+		String requestString = query;
 
-		String json = doGet(requestString);
+		String json = doGetArray(requestString);
 		Gson gson = new Gson();
 		try
 		{
@@ -359,6 +375,87 @@ public class ResourceFactory
 			throw new ConnectException(e.getMessage());
 		}
 		return results;
+	}
+
+	/** Get a single instance of a resource. This is relatively slow. You should instead
+	 * batch these queries if possible (see the 'find*' methods.)
+	 * 
+	 * @param cls
+	 * @param id
+	 * @return
+	 * @throws ConnectException 
+	 */
+	public <T extends AbstractRemoteResource> T createResource(Class<T> cls, long id) throws IOException
+	{
+		String query = getResourceQuery(cls, id);
+		if(query != null)
+		{
+			String json = doGet(query);
+			json = json.trim();
+
+			// We know there is only one value. Strip the array information and re-cache.
+			if(json.startsWith("["))
+			{
+				json = json.substring(1, json.length() - 1);
+				cache.cache(query, json);
+			}
+			Gson gson = new Gson();
+			try
+			{
+				return gson.fromJson(json, cls);
+			}
+			catch(JsonSyntaxException e)
+			{
+				System.err.println("Exception parsing response from request '" + query + "'");
+				System.err.println(json);
+
+				// Throw a connect exception so that the caller knows not to try any more.
+				throw new ConnectException(e.getMessage());
+			}
+		}
+
+		return null;
+	}
+
+	/** Get a query for a resource of the specified class type
+	 * 
+	 * @param cls
+	 * @param id
+	 * @return
+	 */
+	private String getResourceQuery(Class<? extends AbstractRemoteResource> cls, long id)
+	{
+		if(ArtifactResource.class.isAssignableFrom(cls))
+		{
+			return "/v1.0/artifact/" + id;
+		}
+		if(PackageResource.class.isAssignableFrom(cls))
+		{
+			return "/v1.0/package/" + id;
+		}
+		if(ScmResource.class.isAssignableFrom(cls))
+		{
+			return "/v1.0/scm/" + id;
+		}
+		return null;
+	}
+
+	/** Due to caching we may not get an array result when expected. Rebuild
+	 * the list.
+	 * 
+	 * @param requestString
+	 * @return
+	 * @throws IOException
+	 */
+	private String doGetArray(String requestString) throws IOException
+	{
+		String json = doGet(requestString);
+		if(json != null)
+		{
+			json = json.trim();
+			if(!json.startsWith("[")) json = "[" + json + "]";
+		}
+		return json;
 	}
 
 	/** Perform the query. Use the cache if possible.
@@ -383,7 +480,7 @@ public class ResourceFactory
 			CloseableHttpClient httpClient = HttpClients.createDefault();
 			try
 			{
-				HttpGet request = new HttpGet(requestString);
+				HttpGet request = new HttpGet(getBaseUrl() + requestString);
 				CloseableHttpResponse response = httpClient.execute(request);
 				int code = response.getStatusLine().getStatusCode();
 				if(code >= 200 && code < 300)
@@ -420,7 +517,7 @@ public class ResourceFactory
 		String json = null;
 
 		String cacheId = requestString + "::" + data;
-		
+
 		// Is there a cached value?
 		if(cache != null)
 		{
@@ -430,7 +527,7 @@ public class ResourceFactory
 		// Not cached
 		if(json == null)
 		{
-			HttpPost request = new HttpPost(requestString);
+			HttpPost request = new HttpPost(getBaseUrl() + requestString);
 			request.setEntity(new StringEntity(data));
 
 			CloseableHttpClient httpClient = HttpClients.createDefault();
@@ -459,6 +556,31 @@ public class ResourceFactory
 			}
 		}
 		return json;
+	}
+
+	/** Preemptively cache the individual queries for these resources.
+	 * 
+	 * @param resources
+	 */
+	public <T extends AbstractRemoteResource> void cacheResources(T[] resources)
+	{
+		Gson gson = new Gson();
+		if(resources != null)
+		{
+			if(cache != null)
+			{
+				for (T t : resources)
+				{
+					long id = t.getId();
+					String query = getResourceQuery(t.getClass(), id);
+					if(query != null)
+					{
+						String json = gson.toJson(t);
+						cache.cache(query, json);
+					}
+				}
+			}
+		}
 	}
 
 	/**

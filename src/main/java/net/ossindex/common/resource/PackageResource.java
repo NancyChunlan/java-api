@@ -28,85 +28,63 @@ package net.ossindex.common.resource;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-
-import net.ossindex.common.ResourceFactory;
 
 import com.google.gson.reflect.TypeToken;
 
+import net.ossindex.common.ResourceFactory;
 
 /** Representation of the FileResource, backed by the OSS Index REST API
  * 
  * @author Ken Duck
  *
  */
-@SuppressWarnings("restriction")
-public class ScmResource extends AbstractRemoteResource
+public class PackageResource extends AbstractRemoteResource implements Comparable<PackageResource>
 {
-	private String uri;
+	/**
+	 * Package name
+	 */
 	private String name;
-	private String description;
-	private long size;
-	private String scm_type;
-	private String requires;
-	private boolean hasVulnerability;
-	private String vulnerabilities;
-	private String references;
-	private String releases;
-	private String files;
-	private String authors;
-	private String languages;
-	// FIXME: Not loading CPE result list, which may have one of two
-	// different forms:
-	//
-	//     "cpes": [
-	//      {
-	//        "status": "none"
-	//      }
-	//    ],
-	//    
-	//    "cpes": [
-	//             {
-	//               "cpecode": "cpe:/a:jquery:jquery",
-	//               "cpe": "http://localhost:8080/v1.0/cpe/a/jquery/jquery"
-	//             }
-	//           ],
 
 	/**
-	 * Cache results from OSS Index for speed purposes
+	 * 
 	 */
-	private VulnerabilityResource[] vulnerabilityCache;
+	private long creation_date;
 
+	/**
+	 * 
+	 */
+	private long update_date;
 
+	/**
+	 * Package description
+	 */
+	private String description;
 
+	/**
+	 * Required for deserialization
+	 */
+	PackageResource()
+	{
+	}
+
+	public PackageResource(long id)
+	{
+		super(id);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.ossindex.common.resource.AbstractRemoteResource#getResourceType()
+	 */
 	@Override
 	protected String getResourceType()
 	{
-		return "scm";
+		return "package";
 	}
 
-
-	/** Get a list of all vulnerabilities affecting this resource.
-	 * 
-	 * @return
-	 */
-	public VulnerabilityResource[] getVulnerabilities() throws IOException
-	{
-		if(vulnerabilityCache != null) return vulnerabilityCache;
-		if(!hasVulnerability)
-		{
-			vulnerabilityCache = new VulnerabilityResource[0];
-		}
-		else
-		{
-			TypeToken<ArrayList<VulnerabilityResource>> type = new TypeToken<ArrayList<VulnerabilityResource>>() {};
-			List<VulnerabilityResource> results = ResourceFactory.getResourceFactory().getResources(type, "/v1.0/scm/" + getId() + "/vulnerabilities");
-			vulnerabilityCache = results.toArray(new VulnerabilityResource[results.size()]);
-		}
-		return vulnerabilityCache;
-	}
-
-	/** Get the SCM name
+	/**
 	 * 
 	 * @return
 	 */
@@ -115,15 +93,13 @@ public class ScmResource extends AbstractRemoteResource
 		return name;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see java.lang.Object#toString()
+	/**
+	 * 
+	 * @return
 	 */
-	@Override
-	public String toString()
+	public String getPackageName()
 	{
-		if(uri == null) return name;
-		return uri.toString();
+		return name;
 	}
 
 	/**
@@ -134,4 +110,75 @@ public class ScmResource extends AbstractRemoteResource
 	{
 		return description;
 	}
+
+	/** Date the package was created, if known
+	 * 
+	 * @return
+	 */
+	public Date getCreationDate()
+	{
+		if(creation_date > 0)
+		{
+			return new Date(creation_date);
+		}
+		return null;
+	}
+
+	/** Date the package was last updated, if known
+	 * 
+	 * @return
+	 */
+	public Date getUpdateDate()
+	{
+		if(update_date > 0)
+		{
+			return new Date(update_date);
+		}
+		return null;
+	}
+
+
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
+	@Override
+	public int compareTo(PackageResource res)
+	{
+		if(res == null) return 1;
+		if(name != null)
+		{
+			if(res.name != null) return name.compareTo(res.name);
+			return 1;
+		}
+		if(res.name != null) return -1;
+		if(getId() > res.getId()) return 1;
+		if(getId() < res.getId()) return -1;
+		return 0;
+	}
+
+	/** Get all of the artifacts owned by the package
+	 * 
+	 * @return
+	 */
+	public ArtifactResource[] getArtifacts()
+	{
+		try
+		{
+			TypeToken<ArrayList<ArtifactResource>> type = new TypeToken<ArrayList<ArtifactResource>>() {};
+			List<ScmResource> results = ResourceFactory.getResourceFactory().getResources(type, "/v1.0/package/" + getId() + "/artifacts");
+			if(results != null)
+			{
+				ArtifactResource[] resources = results.toArray(new ArtifactResource[results.size()]);
+				ResourceFactory.getResourceFactory().cacheResources(resources);
+				return resources;
+			}
+		}
+		catch(IOException e)
+		{
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 }

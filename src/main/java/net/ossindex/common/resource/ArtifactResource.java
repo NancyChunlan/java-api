@@ -26,9 +26,11 @@
  */
 package net.ossindex.common.resource;
 
+import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.ossindex.common.ResourceFactory;
 import net.ossindex.version.IVersion;
 import net.ossindex.version.VersionFactory;
 
@@ -68,6 +70,11 @@ public class ArtifactResource extends AbstractRemoteResource implements Comparab
 	 * SCM id
 	 */
 	private long scm_id;
+	
+	/**
+	 * 
+	 */
+	private long package_id;
 
 	/**
 	 * URL for package download
@@ -229,5 +236,19 @@ public class ArtifactResource extends AbstractRemoteResource implements Comparab
 		if(yourVersion == null) return 1;
 		if(myVersion == null) return -1;
 		return myVersion.compareTo(yourVersion);
+	}
+
+	/** Get the package the artifact belongs to
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
+	public PackageResource getPackage() throws IOException
+	{
+		if(package_id > 0)
+		{
+			return ResourceFactory.getResourceFactory().createResource(PackageResource.class, package_id);
+		}
+		return null;
 	}
 }
