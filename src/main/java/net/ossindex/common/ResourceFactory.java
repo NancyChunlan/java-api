@@ -174,8 +174,6 @@ public class ResourceFactory
 	{
 		if(pkgDeps == null || pkgDeps.length == 0) return new ArtifactResource[0];
 
-		CloseableHttpClient httpClient = HttpClients.createDefault();
-
 		String reqPath = "/v1.0/search/artifact/";
 
 		StringBuilder sb = new StringBuilder();
@@ -198,37 +196,22 @@ public class ResourceFactory
 			System.err.println("  DATA: " + sb.toString());
 		}
 
+		String requestString = getBaseUrl() + reqPath;
+		String data = sb.toString();
+		String json = doPost(requestString, data);
+		Gson gson = new Gson();
 		try
 		{
-			HttpPost request = new HttpPost(getBaseUrl() + reqPath);
-			request.setEntity(new StringEntity(sb.toString()));
-
-			CloseableHttpResponse response = httpClient.execute(request);
-			int code = response.getStatusLine().getStatusCode();
-			if(code < 200 || code > 299)
-			{
-				throw new ConnectException(response.getStatusLine().getReasonPhrase() + " (" + code + ")");
-			}
-			String json = EntityUtils.toString(response.getEntity(), "UTF-8");
-			Gson gson = new Gson();
-			try
-			{
-				ArtifactResource[] resources = gson.fromJson(json, ArtifactResource[].class);
-				return resources;
-			}
-			catch(JsonSyntaxException e)
-			{
-				System.err.println("Exception parsing response from request '" + reqPath + "'");
-				System.err.println(json);
-
-				// Throw a connect exception so that the caller knows not to try any more.
-				throw new ConnectException(e.getMessage());
-			}
+			ArtifactResource[] resources = gson.fromJson(json, ArtifactResource[].class);
+			return resources;
 		}
-		finally
+		catch(JsonSyntaxException e)
 		{
-			httpClient.close();
-			//			System.err.println(" done");
+			System.err.println("Exception parsing response from request '" + reqPath + "'");
+			System.err.println(json);
+
+			// Throw a connect exception so that the caller knows not to try any more.
+			throw new ConnectException(e.getMessage());
 		}
 	}
 
@@ -260,7 +243,6 @@ public class ResourceFactory
 	{
 		if(files == null || files.length == 0) return new FileResource[0];
 
-		CloseableHttpClient httpClient = HttpClients.createDefault();
 		StringBuilder sb = new StringBuilder(getBaseUrl());
 		sb.append("/v1.0/sha1/");
 		for(int i = 0; i < files.length; i++)
@@ -273,30 +255,20 @@ public class ResourceFactory
 		String requestString = sb.toString();
 		if(DEBUG) System.err.print("Request: " + requestString + "...");
 
+		String json = doGet(requestString);
+		Gson gson = new Gson();
 		try
 		{
-			HttpGet request = new HttpGet(requestString);
-			CloseableHttpResponse response = httpClient.execute(request);
-			String json = EntityUtils.toString(response.getEntity(), "UTF-8");
-			Gson gson = new Gson();
-			try
-			{
-				FileResource[] resources = gson.fromJson(json, FileResource[].class);
-				return resources;
-			}
-			catch(JsonSyntaxException e)
-			{
-				System.err.println("Exception parsing response from request '" + requestString + "'");
-				System.err.println(json);
-
-				// Throw a connect exception so that the caller knows not to try any more.
-				throw new ConnectException(e.getMessage());
-			}
+			FileResource[] resources = gson.fromJson(json, FileResource[].class);
+			return resources;
 		}
-		finally
+		catch(JsonSyntaxException e)
 		{
-			httpClient.close();
-			//			System.err.println(" done");
+			System.err.println("Exception parsing response from request '" + requestString + "'");
+			System.err.println(json);
+
+			// Throw a connect exception so that the caller knows not to try any more.
+			throw new ConnectException(e.getMessage());
 		}
 	}
 
@@ -334,7 +306,6 @@ public class ResourceFactory
 	{
 		if(scmIds == null || scmIds.length == 0) return new ScmResource[0];
 
-		CloseableHttpClient httpClient = HttpClients.createDefault();
 		StringBuilder sb = new StringBuilder(getBaseUrl());
 		sb.append("/v1.0/scm/");
 		for(int i = 0; i < scmIds.length; i++)
@@ -344,30 +315,20 @@ public class ResourceFactory
 		}
 		String requestString = sb.toString();
 
+		String json = doGet(requestString);
+		Gson gson = new Gson();
 		try
 		{
-			HttpGet request = new HttpGet(requestString);
-			CloseableHttpResponse response = httpClient.execute(request);
-			String json = EntityUtils.toString(response.getEntity(), "UTF-8");
-			Gson gson = new Gson();
-			try
-			{
-				ScmResource[] resources = gson.fromJson(json, ScmResource[].class);
-				return resources;
-			}
-			catch(JsonSyntaxException e)
-			{
-				System.err.println("Exception parsing response from request '" + requestString + "'");
-				System.err.println(json);
-
-				// Throw a connect exception so that the caller knows not to try any more.
-				throw new ConnectException(e.getMessage());
-			}
+			ScmResource[] resources = gson.fromJson(json, ScmResource[].class);
+			return resources;
 		}
-		finally
+		catch(JsonSyntaxException e)
 		{
-			httpClient.close();
-			//			System.err.println(" done");
+			System.err.println("Exception parsing response from request '" + requestString + "'");
+			System.err.println(json);
+
+			// Throw a connect exception so that the caller knows not to try any more.
+			throw new ConnectException(e.getMessage());
 		}
 	}
 
@@ -380,35 +341,111 @@ public class ResourceFactory
 	public <T extends AbstractRemoteResource> List<T> getResources(TypeToken<?> type, String query) throws IOException
 	{
 		List<T> results = null;
-		CloseableHttpClient httpClient = HttpClients.createDefault();
 
 		String requestString = getBaseUrl() + query;
 
+		String json = doGet(requestString);
+		Gson gson = new Gson();
 		try
 		{
-			HttpGet request = new HttpGet(requestString);
-			CloseableHttpResponse response = httpClient.execute(request);
-			String json = EntityUtils.toString(response.getEntity(), "UTF-8");
-			Gson gson = new Gson();
+			results = gson.fromJson(json, type.getType());
+		}
+		catch(JsonSyntaxException e)
+		{
+			System.err.println("Exception parsing response from request '" + requestString + "'");
+			System.err.println(json);
+
+			// Throw a connect exception so that the caller knows not to try any more.
+			throw new ConnectException(e.getMessage());
+		}
+		return results;
+	}
+
+	/** Perform the query. Use the cache if possible.
+	 * 
+	 * @param requestString
+	 * @return
+	 * @throws IOException 
+	 */
+	private String doGet(String requestString) throws IOException
+	{
+		String json = null;
+
+		// Is there a cached value?
+		if(cache != null)
+		{
+			json = cache.get(requestString);
+		}
+
+		// Not cached
+		if(json == null)
+		{
+			CloseableHttpClient httpClient = HttpClients.createDefault();
 			try
 			{
-				results = gson.fromJson(json, type.getType());
+				HttpGet request = new HttpGet(requestString);
+				CloseableHttpResponse response = httpClient.execute(request);
+				int code = response.getStatusLine().getStatusCode();
+				if(code >= 200 && code < 300)
+				{
+					json = EntityUtils.toString(response.getEntity(), "UTF-8");
+				}
 			}
-			catch(JsonSyntaxException e)
+			finally
 			{
-				System.err.println("Exception parsing response from request '" + requestString + "'");
-				System.err.println(json);
-
-				// Throw a connect exception so that the caller knows not to try any more.
-				throw new ConnectException(e.getMessage());
+				httpClient.close();
+				//			System.err.println(" done");
 			}
+
+			if(json != null)
+			{
+				if(cache != null)
+				{
+					cache.cache(requestString, json);
+				}
+			}
+		}
+		return json;
+	}
+
+	/**
+	 * 
+	 * @param requestString
+	 * @param data
+	 * @return
+	 * @throws IOException
+	 */
+	private String doPost(String requestString, String data) throws IOException
+	{
+		String json = null;
+		HttpPost request = new HttpPost(requestString);
+		request.setEntity(new StringEntity(data));
+
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+		try
+		{
+			CloseableHttpResponse response = httpClient.execute(request);
+			int code = response.getStatusLine().getStatusCode();
+			if(code < 200 || code > 299)
+			{
+				throw new ConnectException(response.getStatusLine().getReasonPhrase() + " (" + code + ")");
+			}
+			json = EntityUtils.toString(response.getEntity(), "UTF-8");
 		}
 		finally
 		{
 			httpClient.close();
 			//			System.err.println(" done");
 		}
-		return results;
+		return json;
+	}
+
+	/**
+	 * 
+	 */
+	public void closeCache()
+	{
+		cache.close();
 	}
 
 }

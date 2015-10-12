@@ -35,4 +35,23 @@ package net.ossindex.common;
 public interface IOssIndexCache
 {
 
+	/** Cache the specified query
+	 * 
+	 * @param requestString
+	 * @param json
+	 */
+	void cache(String requestString, String json);
+
+	/** Get cached results, if they are available
+	 * 
+	 * @param requestString
+	 * @return
+	 */
+	String get(String requestString);
+
+	/**
+	 * Ensure that the cache persists if required
+	 */
+	void close();
+
 }
