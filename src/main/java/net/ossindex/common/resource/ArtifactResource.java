@@ -27,8 +27,12 @@
 package net.ossindex.common.resource;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.google.gson.reflect.TypeToken;
 
 import net.ossindex.common.ResourceFactory;
 import net.ossindex.version.IVersion;
@@ -248,6 +252,30 @@ public class ArtifactResource extends AbstractRemoteResource implements Comparab
 		if(package_id > 0)
 		{
 			return ResourceFactory.getResourceFactory().createResource(PackageResource.class, package_id);
+		}
+		return null;
+	}
+
+	/** Get the dependency graph for the artifact
+	 * 
+	 * @return
+	 */
+	public ArtifactResource[] getDependencyGraph()
+	{
+		try
+		{
+			TypeToken<ArrayList<ArtifactResource>> type = new TypeToken<ArrayList<ArtifactResource>>() {};
+			List<ArtifactResource> results = ResourceFactory.getResourceFactory().getResources(type, "/v1.0/artifact/" + getId() + "/dependency_graph");
+			if(results != null)
+			{
+				ArtifactResource[] resources = results.toArray(new ArtifactResource[results.size()]);
+				ResourceFactory.getResourceFactory().cacheResources(resources);
+				return resources;
+			}
+		}
+		catch(IOException e)
+		{
+			e.printStackTrace();
 		}
 		return null;
 	}

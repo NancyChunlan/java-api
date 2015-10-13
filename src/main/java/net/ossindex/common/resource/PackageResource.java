@@ -166,7 +166,7 @@ public class PackageResource extends AbstractRemoteResource implements Comparabl
 		try
 		{
 			TypeToken<ArrayList<ArtifactResource>> type = new TypeToken<ArrayList<ArtifactResource>>() {};
-			List<ScmResource> results = ResourceFactory.getResourceFactory().getResources(type, "/v1.0/package/" + getId() + "/artifacts");
+			List<ArtifactResource> results = ResourceFactory.getResourceFactory().getResources(type, "/v1.0/package/" + getId() + "/artifacts");
 			if(results != null)
 			{
 				ArtifactResource[] resources = results.toArray(new ArtifactResource[results.size()]);

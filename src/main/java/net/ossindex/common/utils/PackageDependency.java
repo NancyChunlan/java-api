@@ -78,6 +78,16 @@ public class PackageDependency
 	private FilePosition position;
 
 	/**
+	 * Is this dependency optional?
+	 */
+	private boolean optional = false;
+
+	/** Is this a root package, which means it is directly referenced (as opposed to transitively).
+	 * 
+	 */
+	private boolean isRoot;
+
+	/**
 	 * 
 	 * @param line Line number in the file that defines the dependency
 	 * @param pkgManager
@@ -117,6 +127,31 @@ public class PackageDependency
 		this.name = artifactId;
 		this.version = version;
 		this.pkgManager = pkgManager;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object o)
+	{
+		if(o instanceof PackageDependency)
+		{
+			PackageDependency dep = (PackageDependency)o;
+			return toString().equals(dep.toString());
+		}
+		return false;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode()
+	{
+		return toString().hashCode();
 	}
 
 	/** Get the package manager name
@@ -251,5 +286,44 @@ public class PackageDependency
 	public String getId()
 	{
 		return groupId + ":" + name + ":" + version;
+	}
+
+	/**
+	 * 
+	 * @param optional
+	 */
+	public void setOptional(Boolean optional)
+	{
+		if(optional != null)
+		{
+			this.optional  = optional;
+		}
+	}
+	
+	/** Is this an optional dependency?
+	 * 
+	 * @return
+	 */
+	public boolean getOptional()
+	{
+		return optional;
+	}
+	
+	/** Is this a root package, which means it is directly referenced (as opposed to transitively).
+	 * 
+	 * @return
+	 */
+	public void setIsRoot(boolean b)
+	{
+		this.isRoot = b;
+	}
+
+	/** Is this a root package, which means it is directly referenced (as opposed to transitively).
+	 * 
+	 * @return
+	 */
+	public boolean isRoot()
+	{
+		return isRoot;
 	}
 }
