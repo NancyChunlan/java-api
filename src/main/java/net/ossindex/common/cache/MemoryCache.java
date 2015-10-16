@@ -87,4 +87,15 @@ public class MemoryCache implements IOssIndexCache
 	{
 	}
 
+	/** It is anticipated that this implementation will never be up long
+	 * enough for the delay to matter.
+	 * 
+	 * @see net.ossindex.common.IOssIndexCache#get(java.lang.String, long)
+	 */
+	@Override
+	public String get(String requestString, long delay)
+	{
+		return get(requestString);
+	}
+
 }

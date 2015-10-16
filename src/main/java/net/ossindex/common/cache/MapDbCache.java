@@ -43,7 +43,7 @@ public class MapDbCache implements IOssIndexCache
 {
 	private DB db;
 	private ConcurrentNavigableMap<String,String> map;
-	
+
 	/** Create a cache at the specified location
 	 * 
 	 * @param root
@@ -51,8 +51,8 @@ public class MapDbCache implements IOssIndexCache
 	public MapDbCache(File root)
 	{
 		db = DBMaker.fileDB(new File(root, "ossindex.cache"))
-		        .closeOnJvmShutdown()
-		        .make();
+				.closeOnJvmShutdown()
+				.make();
 		map = db.treeMap("queryCache");
 	}
 
@@ -63,7 +63,7 @@ public class MapDbCache implements IOssIndexCache
 	@Override
 	public void cache(String requestString, String json)
 	{
-		map.put(requestString, json);
+		map.put(requestString, "(T=" + System.currentTimeMillis() + ")" + json);
 	}
 
 	/*
@@ -73,7 +73,55 @@ public class MapDbCache implements IOssIndexCache
 	@Override
 	public String get(String requestString)
 	{
-		return map.get(requestString);
+		String buf = map.get(requestString);
+		if(buf != null)
+		{
+			if(buf.startsWith("(T="))
+			{
+				int index = buf.indexOf(')');
+				buf = buf.substring(index + 1);
+			}
+		}
+		return buf;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.ossindex.common.IOssIndexCache#get(java.lang.String, long)
+	 */
+	@Override
+	public String get(String requestString, long delay)
+	{
+		if(delay > 0)
+		{
+			String buf = map.get(requestString);
+			if(buf != null)
+			{
+				if(buf.startsWith("(T="))
+				{
+					buf = buf.substring(3);
+					int index = buf.indexOf(')');
+					long timestamp = Long.parseLong(buf.substring(0, index));
+					buf = buf.substring(index + 1);
+					long now = System.currentTimeMillis();
+					if((now - timestamp) < delay)
+					{
+						return buf;
+					}
+				}
+				else
+				{
+					// This will only happen to old stored data, and should
+					// never happen again.
+					return null;
+				}
+			}
+			return null;
+		}
+		else
+		{
+			return get(requestString);
+		}
 	}
 
 	/*
@@ -85,7 +133,7 @@ public class MapDbCache implements IOssIndexCache
 	{
 		db.commit();
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * @see net.ossindex.common.IOssIndexCache#close()

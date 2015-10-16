@@ -60,6 +60,11 @@ import com.google.gson.reflect.TypeToken;
 @SuppressWarnings("restriction")
 public class ResourceFactory
 {
+	private static final long ONE_MINUTE = 60000;
+	private static final long TEN_MINUTES = 10 * ONE_MINUTE;
+	private static final long ONE_HOUR = 60 * ONE_MINUTE;
+	private static final long ONE_DAY = ONE_HOUR * 24;
+	
 	private static ResourceFactory instance;
 
 	/**
@@ -70,7 +75,13 @@ public class ResourceFactory
 	/**
 	 * Temporary boolean for debugging purposes.
 	 */
-	private static boolean DEBUG = false;
+	private static boolean DEBUG = true;
+	
+	/**
+	 * Time of the last connection timeout, which is used to determine if we should
+	 * check again.
+	 */
+	private static long timeout = 0;
 
 	/**
 	 * Bad form! Hard-coded for prototype.
@@ -471,7 +482,21 @@ public class ResourceFactory
 		// Is there a cached value?
 		if(cache != null)
 		{
-			json = cache.get(requestString);
+			long delay = ONE_DAY;
+			if(timeout > 0)
+			{
+				long now = System.currentTimeMillis();
+				if(now - timeout > TEN_MINUTES)
+				{
+					timeout = 0;
+				}
+				else
+				{
+					delay = -1;
+				}
+			}
+			
+			json = cache.get(requestString, delay);
 		}
 
 		// Not cached
@@ -487,6 +512,13 @@ public class ResourceFactory
 				{
 					json = EntityUtils.toString(response.getEntity(), "UTF-8");
 				}
+			}
+			catch(ConnectException e)
+			{
+				// Timed out -- there is no server. Use cached data for now.
+				timeout = System.currentTimeMillis();
+				// Try to get a backup from the cache, ignoring the time delay
+				json = cache.get(requestString);
 			}
 			finally
 			{
@@ -521,7 +553,21 @@ public class ResourceFactory
 		// Is there a cached value?
 		if(cache != null)
 		{
-			json = cache.get(cacheId);
+			long delay = ONE_DAY;
+			if(timeout > 0)
+			{
+				long now = System.currentTimeMillis();
+				if(now - timeout > TEN_MINUTES)
+				{
+					timeout = 0;
+				}
+				else
+				{
+					delay = -1;
+				}
+			}
+			
+			json = cache.get(cacheId, delay);
 		}
 
 		// Not cached
@@ -540,6 +586,13 @@ public class ResourceFactory
 					throw new ConnectException(response.getStatusLine().getReasonPhrase() + " (" + code + ")");
 				}
 				json = EntityUtils.toString(response.getEntity(), "UTF-8");
+			}
+			catch(ConnectException e)
+			{
+				// Timed out -- there is no server. Use cached data for now.
+				timeout = System.currentTimeMillis();
+				// Try to get a backup from the cache, ignoring the time delay
+				json = cache.get(requestString);
 			}
 			finally
 			{

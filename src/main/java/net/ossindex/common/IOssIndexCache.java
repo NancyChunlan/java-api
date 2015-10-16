@@ -49,6 +49,16 @@ public interface IOssIndexCache
 	 */
 	String get(String requestString);
 
+	/** Return the cached value if the elapsed time is not passed.
+	 * 
+	 * A delay of < 0 indicates that we should just use the cached value
+	 * 
+	 * @param requestString
+	 * @param delay
+	 * @return
+	 */
+	String get(String requestString, long delay);
+	
 	/**
 	 * Commit any recent changes into the cache
 	 */
