@@ -87,12 +87,12 @@ public class PackageDependency
 	 */
 	private boolean isRoot;
 
-	/**
+	/** Create a package dependency
 	 * 
 	 * @param line Line number in the file that defines the dependency
-	 * @param pkgManager
-	 * @param pkgName
-	 * @param version
+	 * @param pkgManager Package manager the dependency belongs to
+	 * @param pkgName The package name
+	 * @param version The version
 	 */
 	public PackageDependency(FilePosition position, String pkgManager, String pkgName, String version)
 	{
@@ -102,11 +102,11 @@ public class PackageDependency
 		this.pkgManager = pkgManager;
 	}
 
-	/**
+	/** Create a package dependency
 	 * 
-	 * @param pkgManager
-	 * @param pkgName
-	 * @param version
+	 * @param pkgManager Package manager the dependency belongs to
+	 * @param pkgName The package name
+	 * @param version The version
 	 */
 	public PackageDependency(String pkgManager, String pkgName, String version)
 	{
@@ -115,11 +115,12 @@ public class PackageDependency
 		this.pkgManager = pkgManager;
 	}
 	
-	/**
+	/** Create a package dependency
 	 * 
-	 * @param pkgManager
-	 * @param pkgName
-	 * @param version
+	 * @param pkgManager Package manager the dependency belongs to
+	 * @param groupId The groupId of the package
+	 * @param pkgName The package name
+	 * @param version The version
 	 */
 	public PackageDependency(String pkgManager, String groupId, String artifactId, String version)
 	{
@@ -156,7 +157,7 @@ public class PackageDependency
 
 	/** Get the package manager name
 	 * 
-	 * @return
+	 * @return The package manager name
 	 */
 	public String getPackageManager()
 	{
@@ -165,7 +166,7 @@ public class PackageDependency
 
 	/** Get the artifact id/name
 	 * 
-	 * @return
+	 * @return The package name
 	 */
 	public String getName()
 	{
@@ -174,13 +175,17 @@ public class PackageDependency
 	
 	/** Get the group id/name
 	 * 
-	 * @return
+	 * @return The group ID name
 	 */
 	public String getGroupId()
 	{
 		return groupId;
 	}
 	
+	/** Get the package version
+	 * 
+	 * @return The version string
+	 */
 	public String getVersion()
 	{
 		return version;
@@ -188,7 +193,7 @@ public class PackageDependency
 	
 	/** Get the line number of the dependency owner file that defines this dependency
 	 * 
-	 * @return
+	 * @return File line the package was found at
 	 */
 	public int getLine()
 	{
@@ -196,12 +201,22 @@ public class PackageDependency
 			return position.getLine();
 		return 0;
 	}
+	
+	/** Get the character offset
+	 * 
+	 * @return Character offset the package was found at
+	 */
 	public int getOffset()
 	{
 		if(position != null)
 			return position.getOffset();
 		return 0;
 	}
+	
+	/** Length of the selection
+	 * 
+	 * @return
+	 */
 	public int getLength()
 	{
 		if(position != null)
@@ -221,7 +236,7 @@ public class PackageDependency
 
 	/** Set the artifact that is deemed to be the best match.
 	 * 
-	 * @param artifact
+	 * @param artifact Set the artifact for the package
 	 */
 	public void setArtifact(ArtifactResource artifact)
 	{
@@ -230,7 +245,7 @@ public class PackageDependency
 
 	/** Set the SCM resource that is deemed to be the dependency source
 	 * 
-	 * @param scmResource
+	 * @param scmResource The SCM resource that was found for the package
 	 */
 	public void setScm(ScmResource scmResource)
 	{
@@ -239,7 +254,7 @@ public class PackageDependency
 	
 	/** Get the artifact for this dependency
 	 * 
-	 * @return
+	 * @return The artifact belonging to the dependency
 	 */
 	public ArtifactResource getArtifact()
 	{
@@ -248,7 +263,7 @@ public class PackageDependency
 	
 	/** Get the SCM resource that is deemed to be the dependency source
 	 * 
-	 * @return
+	 * @return The SCM the package belongs to
 	 */
 	public ScmResource getScm()
 	{
@@ -257,7 +272,7 @@ public class PackageDependency
 
 	/** Get a description of the dependency
 	 * 
-	 * @return
+	 * @return The package description
 	 */
 	public String getDescription()
 	{
@@ -265,10 +280,10 @@ public class PackageDependency
 		return "unknown";
 	}
 
-	/**
+	/** Get the vulnerabilities that apply to the package
 	 * 
-	 * @return
-	 * @throws IOException
+	 * @return An array of vulnerabilities that affect the package
+	 * @throws IOException On error
 	 */
 	public VulnerabilityResource[] getVulnerabilities() throws IOException
 	{
@@ -281,16 +296,16 @@ public class PackageDependency
 
 	/** Get the simple fully descriptive ID for the package
 	 * 
-	 * @return
+	 * @return Return a string ID describing the package
 	 */
 	public String getId()
 	{
 		return groupId + ":" + name + ":" + version;
 	}
 
-	/**
+	/** Indicates that this is an "optional" package
 	 * 
-	 * @param optional
+	 * @param optional True if this is an optional package
 	 */
 	public void setOptional(Boolean optional)
 	{
@@ -302,25 +317,27 @@ public class PackageDependency
 	
 	/** Is this an optional dependency?
 	 * 
-	 * @return
+	 * @return True if this is an optional package
 	 */
 	public boolean getOptional()
 	{
 		return optional;
 	}
 	
-	/** Is this a root package, which means it is directly referenced (as opposed to transitively).
+	/** Is this a root package, which means it is directly referenced
+	 * (as opposed to transitively).
 	 * 
-	 * @return
+	 * @return True if this package is the "root" package
 	 */
 	public void setIsRoot(boolean b)
 	{
 		this.isRoot = b;
 	}
 
-	/** Is this a root package, which means it is directly referenced (as opposed to transitively).
+	/** Is this a root package, which means it is directly referenced
+	 * (as opposed to transitively).
 	 * 
-	 * @return
+	 * @return True if this package is the "root" package
 	 */
 	public boolean isRoot()
 	{

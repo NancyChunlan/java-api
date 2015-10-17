@@ -69,6 +69,10 @@ public class PackageResource extends AbstractRemoteResource implements Comparabl
 	{
 	}
 
+	/** Create a new package
+	 * 
+	 * @param id The ID of the package in OSS Index
+	 */
 	public PackageResource(long id)
 	{
 		super(id);
@@ -84,27 +88,27 @@ public class PackageResource extends AbstractRemoteResource implements Comparabl
 		return "package";
 	}
 
-	/**
+	/** Get the name of the resource
 	 * 
-	 * @return
+	 * @return The name of the resource
 	 */
 	public String getName()
 	{
 		return name;
 	}
 
-	/**
+	/** Get the package name
 	 * 
-	 * @return
+	 * @return The package name
 	 */
 	public String getPackageName()
 	{
 		return name;
 	}
 
-	/**
+	/** Get the artifact description
 	 * 
-	 * @return
+	 * @return A description
 	 */
 	public String getDescription()
 	{
@@ -113,7 +117,7 @@ public class PackageResource extends AbstractRemoteResource implements Comparabl
 
 	/** Date the package was created, if known
 	 * 
-	 * @return
+	 * @return The creation date
 	 */
 	public Date getCreationDate()
 	{
@@ -126,7 +130,7 @@ public class PackageResource extends AbstractRemoteResource implements Comparabl
 
 	/** Date the package was last updated, if known
 	 * 
-	 * @return
+	 * @return The update date
 	 */
 	public Date getUpdateDate()
 	{
@@ -159,7 +163,7 @@ public class PackageResource extends AbstractRemoteResource implements Comparabl
 
 	/** Get all of the artifacts owned by the package
 	 * 
-	 * @return
+	 * @return List of owned artifacts
 	 */
 	public ArtifactResource[] getArtifacts()
 	{

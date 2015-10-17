@@ -44,6 +44,10 @@ import org.junit.Test;
  */
 public class ScmResourceTest
 {
+	/** Get an SCM resource
+	 * 
+	 * @throws IOException On error
+	 */
 	@Test
 	public void testSingleScmFind() throws IOException
 	{
@@ -55,6 +59,10 @@ public class ScmResourceTest
 		assertEquals("jquery", resources[0].getName());
 	}
 
+	/** Get two SCM resources
+	 * 
+	 * @throws IOException On error
+	 */
 	@Test
 	public void testDoubleScmFind() throws IOException
 	{
@@ -68,6 +76,10 @@ public class ScmResourceTest
 		assertEquals("async", resources[1].getName());
 	}
 
+	/** Get vulnerabilities for a package
+	 * 
+	 * @throws IOException On error
+	 */
 	@Test
 	public void testGetVulnerabilities() throws IOException
 	{

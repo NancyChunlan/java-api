@@ -75,7 +75,7 @@ public class ResourceFactory
 	/**
 	 * Temporary boolean for debugging purposes.
 	 */
-	private static boolean DEBUG = true;
+	private static boolean DEBUG = false;
 	
 	/**
 	 * Time of the last connection timeout, which is used to determine if we should
@@ -97,7 +97,7 @@ public class ResourceFactory
 
 	/** Get the resource factory instance.
 	 * 
-	 * @return
+	 * @return ResourceFactory instance
 	 */
 	public synchronized static ResourceFactory getResourceFactory()
 	{
@@ -107,7 +107,7 @@ public class ResourceFactory
 
 	/** Set the cache implementation
 	 * 
-	 * @param cache
+	 * @param cache Cache implementation
 	 */
 	public void setCache(IOssIndexCache cache)
 	{
@@ -116,7 +116,7 @@ public class ResourceFactory
 
 	/** Get the current cache implementation
 	 * 
-	 * @return
+	 * @return Cache implementation
 	 */
 	public IOssIndexCache getCache()
 	{
@@ -125,7 +125,7 @@ public class ResourceFactory
 
 	/** Get the base URL for REST requests.
 	 * 
-	 * @return
+	 * @return Request URL
 	 */
 	protected static String getBaseUrl()
 	{
@@ -139,9 +139,9 @@ public class ResourceFactory
 		}
 	}
 
-	/**
+	/** Use the debug server
 	 * 
-	 * @param b
+	 * @param b Set to true to enable debug server access
 	 */
 	public static void setDebug(boolean b)
 	{
@@ -159,11 +159,11 @@ public class ResourceFactory
 		}
 	}
 
-	/**
+	/** Find the ArtifactResource matching the specified package dependency
 	 * 
-	 * @param dep
-	 * @return
-	 * @throws IOException
+	 * @param dep Package dependency
+	 * @return Matching artifact resource (only returns one match)
+	 * @throws IOException On error
 	 */
 	public ArtifactResource findArtifactResource(PackageDependency dep) throws IOException
 	{
@@ -178,9 +178,9 @@ public class ResourceFactory
 	 * This is done so the user knows which result belongs with which
 	 * input file.
 	 * 
-	 * @param files
-	 * @return
-	 * @throws IOException
+	 * @param pkgDeps Array of package dependencies to find matching artifacts for
+	 * @return Array of matching artifacts
+	 * @throws IOException On error
 	 */
 	public ArtifactResource[] findArtifactResources(PackageDependency[] pkgDeps) throws IOException
 	{
@@ -197,6 +197,7 @@ public class ResourceFactory
 			sb.append("{");
 			sb.append("\"pm\": \"" + dep.getPackageManager() + "\",");
 			sb.append("\"name\": \"" + dep.getName() + "\",");
+			sb.append("\"group\": \"" + dep.getGroupId() + "\",");
 			sb.append("\"version\": \"" + dep.getVersion() + "\"");
 			sb.append("}");
 		}
@@ -234,9 +235,9 @@ public class ResourceFactory
 	/** Find an applicable resource, otherwise return null. Use a combination
 	 * of HttpClient and GSON to handle the request and response.
 	 * 
-	 * @param file
-	 * @return
-	 * @throws IOException 
+	 * @param file File to retrieve a file resource for
+	 * @return The matching file resource
+	 * @throws IOException On error
 	 */
 	public FileResource findFileResource(File file) throws IOException
 	{
@@ -251,9 +252,9 @@ public class ResourceFactory
 	 * This is done so the user knows which result belongs with which
 	 * input file.
 	 * 
-	 * @param files
-	 * @return
-	 * @throws IOException
+	 * @param files Files to find matching file resources for
+	 * @return Matching file resources
+	 * @throws IOException On error
 	 */
 	public FileResource[] findFileResources(File[] files) throws IOException
 	{
@@ -294,8 +295,9 @@ public class ResourceFactory
 
 	/** Get the SHA1 checksum for the file.
 	 * 
-	 * @return
-	 * @throws IOException
+	 * @param file File to retrieve a checksum for
+	 * @return The SHA1 checksum for the file
+	 * @throws IOException On error
 	 */
 	private static String getSha1(File file) throws IOException
 	{
@@ -318,9 +320,9 @@ public class ResourceFactory
 
 	/** Get an SCM resource list matching the supplied scm IDs.
 	 * 
-	 * @param scmIds
-	 * @return
-	 * @throws IOException
+	 * @param scmIds SCM resource IDs
+	 * @return Array of SCM resources
+	 * @throws IOException On error
 	 */
 	public ScmResource[] findScmResources(long[] scmIds) throws IOException
 	{
@@ -361,9 +363,10 @@ public class ResourceFactory
 
 	/** Build resources out of the results of the specified query.
 	 * 
-	 * @param cls
-	 * @return
-	 * @throws IOException
+	 * @param type Array type for results
+	 * @param query OSS Index REST query
+	 * @return Results matching the query with the specified type
+	 * @throws IOException On error
 	 */
 	public <T extends AbstractRemoteResource> List<T> getResources(TypeToken<?> type, String query) throws IOException
 	{
@@ -391,10 +394,10 @@ public class ResourceFactory
 	/** Get a single instance of a resource. This is relatively slow. You should instead
 	 * batch these queries if possible (see the 'find*' methods.)
 	 * 
-	 * @param cls
-	 * @param id
-	 * @return
-	 * @throws ConnectException 
+	 * @param cls Class (type) of the expected resource
+	 * @param id Resource ID to retrieve
+	 * @return Resource matching the specified ID
+	 * @throws ConnectException On server connection issues
 	 */
 	public <T extends AbstractRemoteResource> T createResource(Class<T> cls, long id) throws IOException
 	{
@@ -430,9 +433,9 @@ public class ResourceFactory
 
 	/** Get a query for a resource of the specified class type
 	 * 
-	 * @param cls
-	 * @param id
-	 * @return
+	 * @param cls Resource type that the query is being built for
+	 * @param id ID of the resource to build the query for
+	 * @return An OSSIndex REST query that will return the requested resource
 	 */
 	private String getResourceQuery(Class<? extends AbstractRemoteResource> cls, long id)
 	{
@@ -454,9 +457,9 @@ public class ResourceFactory
 	/** Due to caching we may not get an array result when expected. Rebuild
 	 * the list.
 	 * 
-	 * @param requestString
-	 * @return
-	 * @throws IOException
+	 * @param requestString QUERY being performed
+	 * @return The JSON results of the query, converted to an array if required
+	 * @throws IOException On error
 	 */
 	private String doGetArray(String requestString) throws IOException
 	{
@@ -469,11 +472,11 @@ public class ResourceFactory
 		return json;
 	}
 
-	/** Perform the query. Use the cache if possible.
+	/** Perform a GET query. Use the cache if possible.
 	 * 
-	 * @param requestString
-	 * @return
-	 * @throws IOException 
+	 * @param requestString QUERY being performed
+	 * @return JSON results of the query
+	 * @throws IOException On error
 	 */
 	private String doGet(String requestString) throws IOException
 	{
@@ -537,12 +540,12 @@ public class ResourceFactory
 		return json;
 	}
 
-	/**
+	/**Perform a POST query. Use the cache if possible.
 	 * 
-	 * @param requestString
-	 * @param data
-	 * @return
-	 * @throws IOException
+	 * @param requestString QUERY being performed
+	 * @param data JSON data for the post query
+	 * @return JSON results of the query
+	 * @throws IOException On error
 	 */
 	private String doPost(String requestString, String data) throws IOException
 	{
@@ -613,7 +616,7 @@ public class ResourceFactory
 
 	/** Preemptively cache the individual queries for these resources.
 	 * 
-	 * @param resources
+	 * @param resources Individual resources to cache
 	 */
 	public <T extends AbstractRemoteResource> void cacheResources(T[] resources)
 	{
@@ -637,7 +640,7 @@ public class ResourceFactory
 	}
 
 	/**
-	 * 
+	 * Close the cache
 	 */
 	public void closeCache()
 	{

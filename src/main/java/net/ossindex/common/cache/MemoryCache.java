@@ -42,7 +42,6 @@ public class MemoryCache implements IOssIndexCache
 	
 	/** Create a cache at the specified location
 	 * 
-	 * @param root
 	 */
 	public MemoryCache()
 	{

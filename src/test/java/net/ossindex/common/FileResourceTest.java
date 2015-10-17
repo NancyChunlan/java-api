@@ -49,7 +49,7 @@ public class FileResourceTest
 {
 	/**
 	 * The empty file is in OSS Index.
-	 * @throws IOException 
+	 * @throws IOException On error
 	 */
 	@Test
 	public void testEmptyFile() throws IOException
@@ -64,7 +64,7 @@ public class FileResourceTest
 	 * in case some funny person decides to add my test file to
 	 * a repository somewhere.
 	 * 
-	 * @throws IOException
+	 * @throws IOException On error
 	 */
 	@Test
 	public void testUniqueFile() throws IOException

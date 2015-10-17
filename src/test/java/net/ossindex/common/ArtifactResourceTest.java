@@ -42,6 +42,10 @@ import org.junit.Test;
  */
 public class ArtifactResourceTest
 {
+	/** Test retrieve npm data
+	 * 
+	 * @throws IOException On error
+	 */
 	@Test
 	public void testAsync() throws IOException
 	{
@@ -52,6 +56,10 @@ public class ArtifactResourceTest
 		assertTrue(resource.getName().startsWith("async-"));
 	}
 
+	/** Test retrieve maven data
+	 * 
+	 * @throws IOException On error
+	 */
 	@Test
 	public void testCommonsLang() throws IOException
 	{
@@ -66,6 +74,10 @@ public class ArtifactResourceTest
 		}
 	}
 
+	/** Test retrieve maven data
+	 * 
+	 * @throws IOException On error
+	 */
 	@Test
 	public void testJavaSemver() throws IOException
 	{
@@ -80,6 +92,10 @@ public class ArtifactResourceTest
 		}
 	}
 
+	/** Test retrieve maven data
+	 * 
+	 * @throws IOException On error
+	 */
 	@Test
 	public void testSlf4jApi() throws IOException
 	{
@@ -94,6 +110,10 @@ public class ArtifactResourceTest
 		}
 	}
 
+	/** Test getting data for multiple dependencies
+	 * 
+	 * @throws IOException On error
+	 */
 	@Test
 	public void testMultiplePackages() throws IOException
 	{

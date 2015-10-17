@@ -78,7 +78,10 @@ public class ScmResource extends AbstractRemoteResource
 	private VulnerabilityResource[] vulnerabilityCache;
 
 
-
+	/*
+	 * (non-Javadoc)
+	 * @see net.ossindex.common.resource.AbstractRemoteResource#getResourceType()
+	 */
 	@Override
 	protected String getResourceType()
 	{
@@ -88,7 +91,7 @@ public class ScmResource extends AbstractRemoteResource
 
 	/** Get a list of all vulnerabilities affecting this resource.
 	 * 
-	 * @return
+	 * @return An array of vulnerabilities affecting the SCM
 	 */
 	public VulnerabilityResource[] getVulnerabilities() throws IOException
 	{
@@ -108,7 +111,7 @@ public class ScmResource extends AbstractRemoteResource
 
 	/** Get the SCM name
 	 * 
-	 * @return
+	 * @return The SCM name
 	 */
 	public String getName()
 	{
@@ -126,9 +129,9 @@ public class ScmResource extends AbstractRemoteResource
 		return uri.toString();
 	}
 
-	/**
+	/** Get the artifact description
 	 * 
-	 * @return
+	 * @return A description
 	 */
 	public String getDescription()
 	{

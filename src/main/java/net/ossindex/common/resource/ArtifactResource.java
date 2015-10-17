@@ -113,6 +113,10 @@ public class ArtifactResource extends AbstractRemoteResource implements Comparab
 	{
 	}
 
+	/** Create a new artifact
+	 * 
+	 * @param id The ID of the artifact in OSS Index
+	 */
 	public ArtifactResource(long id)
 	{
 		super(id);
@@ -128,18 +132,18 @@ public class ArtifactResource extends AbstractRemoteResource implements Comparab
 		return "artifact";
 	}
 
-	/**
+	/** Get the name of the resource
 	 * 
-	 * @return
+	 * @return The name of the resource
 	 */
 	public String getName()
 	{
 		return name;
 	}
 
-	/**
+	/** Get the package name
 	 * 
-	 * @return
+	 * @return The package name
 	 */
 	public String getPackageName()
 	{
@@ -173,45 +177,46 @@ public class ArtifactResource extends AbstractRemoteResource implements Comparab
 		return name;
 	}
 
-	/**
+	/** Get the version string
 	 * 
-	 * @return
+	 * @return A version string
 	 */
 	public String getVersionString()
 	{
 		return version;
 	}
 
-	/**
+	/** Get the artifact description
 	 * 
-	 * @return
+	 * @return A description
 	 */
 	public String getDescription()
 	{
 		return description;
 	}
 
-	/**
+	/** Get the name of the package manager that owns the artifact
 	 * 
-	 * @return
+	 * @return The package manager name
 	 */
 	public String getPackageManager()
 	{
 		return package_manager;
 	}
 
-	/**
+	/** When the resource is retrieved in a search, this returns the search
+	 * strings that were used.
 	 * 
-	 * @return
+	 * @return The search strings
 	 */
 	public String[] getSearch()
 	{
 		return search;
 	}
 
-	/**
+	/** Get the ID of the SCM related to the artifact
 	 * 
-	 * @return
+	 * @return The SCM ID
 	 */
 	public long getScmId()
 	{
@@ -220,7 +225,7 @@ public class ArtifactResource extends AbstractRemoteResource implements Comparab
 
 	/** Get the semantic version for the resource.
 	 * 
-	 * @return
+	 * @return The artifact version
 	 */
 	public IVersion getVersion()
 	{
@@ -244,8 +249,8 @@ public class ArtifactResource extends AbstractRemoteResource implements Comparab
 
 	/** Get the package the artifact belongs to
 	 * 
-	 * @return
-	 * @throws IOException
+	 * @return The package resource owning this resource
+	 * @throws IOException On error
 	 */
 	public PackageResource getPackage() throws IOException
 	{
@@ -258,7 +263,7 @@ public class ArtifactResource extends AbstractRemoteResource implements Comparab
 
 	/** Get the dependency graph for the artifact
 	 * 
-	 * @return
+	 * @return Dependency graph
 	 */
 	public ArtifactResource[] getDependencyGraph()
 	{

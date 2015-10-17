@@ -35,12 +35,14 @@ package net.ossindex.common.utils;
  */
 public class LineIndexer
 {
-
+	/**
+	 * File lines
+	 */
 	private String[] rows;
 
-	/**
+	/** Index the specified file
 	 * 
-	 * @param text
+	 * @param text File text to index
 	 */
 	public LineIndexer(String text)
 	{
@@ -50,8 +52,8 @@ public class LineIndexer
 
 	/** Get first line where the specified text is matched
 	 * 
-	 * @param text
-	 * @return
+	 * @param text Text to search for
+	 * @return The position of the identified text
 	 */
 	public FilePosition getFirst(String text)
 	{

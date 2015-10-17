@@ -32,7 +32,6 @@ package net.ossindex.common.resource;
  * @author Ken Duck
  *
  */
-@SuppressWarnings("restriction")
 public class FileResource extends AbstractRemoteResource
 {
 	/**
@@ -53,14 +52,18 @@ public class FileResource extends AbstractRemoteResource
 	{
 	}
 	
+	/** Create a new file resource
+	 * 
+	 * @param id The ID of the resource in OSS Index
+	 */
 	public FileResource(long id)
 	{
 		super(id);
 	}
 
-	/**
+	/**Get the name of the resource
 	 * 
-	 * @return
+	 * @return The name of the resource
 	 */
 	public String getName()
 	{

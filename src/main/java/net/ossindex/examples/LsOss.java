@@ -54,7 +54,7 @@ public class LsOss
 	
 	/** Very simple argument parsing.
 	 * 
-	 * @param args
+	 * @param args Command arguments
 	 */
 	public LsOss(String[] args)
 	{
@@ -94,7 +94,7 @@ public class LsOss
 	 * problems up to the top whereupon they will become the users
 	 * problem.
 	 * 
-	 * @throws IOException 
+	 * @throws IOException  On error
 	 * 
 	 */
 	private void run() throws IOException
@@ -156,10 +156,10 @@ public class LsOss
 		System.exit(1);
 	}
 
-	/**
+	/** Program main
 	 * 
-	 * @param args
-	 * @throws IOException 
+	 * @param args Program arguments
+	 * @throws IOException On error
 	 */
 	public static void main(String[] args) throws IOException
 	{

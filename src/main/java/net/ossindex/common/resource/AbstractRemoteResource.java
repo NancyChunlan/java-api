@@ -62,9 +62,9 @@ public abstract class AbstractRemoteResource
 	{
 	}
 	
-	/**
+	/** Create a new resource
 	 * 
-	 * @param id
+	 * @param id Create a resource with the specified ID
 	 */
 	public AbstractRemoteResource(long id)
 	{
@@ -82,7 +82,7 @@ public abstract class AbstractRemoteResource
 	
 	/** Returns true if the resource exists at OSS Index
 	 * 
-	 * @return
+	 * @return true if the resource is contained in OSS Index
 	 */
 	public boolean exists()
 	{
@@ -91,7 +91,7 @@ public abstract class AbstractRemoteResource
 	
 	/** Get the OSS Index resource type.
 	 * 
-	 * @return
+	 * @return The resource type name
 	 */
 	protected abstract String getResourceType();
 
