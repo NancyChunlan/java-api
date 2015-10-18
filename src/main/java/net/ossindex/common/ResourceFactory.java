@@ -52,6 +52,10 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+
 /**
  * 
  * @author Ken Duck
@@ -66,6 +70,13 @@ public class ResourceFactory
 	private static final long ONE_DAY = ONE_HOUR * 24;
 	
 	private static ResourceFactory instance;
+	
+	static
+	{
+		// Default log4j configuration. Hides configuration warnings.
+		BasicConfigurator.configure();
+		Logger.getRootLogger().setLevel(Level.WARN);
+	}
 
 	/**
 	 * Cache implementation
@@ -197,7 +208,7 @@ public class ResourceFactory
 			sb.append("{");
 			sb.append("\"pm\": \"" + dep.getPackageManager() + "\",");
 			sb.append("\"name\": \"" + dep.getName() + "\",");
-			sb.append("\"group\": \"" + dep.getGroupId() + "\",");
+			if(dep.getGroupId() != null) sb.append("\"group\": \"" + dep.getGroupId() + "\",");
 			sb.append("\"version\": \"" + dep.getVersion() + "\"");
 			sb.append("}");
 		}
