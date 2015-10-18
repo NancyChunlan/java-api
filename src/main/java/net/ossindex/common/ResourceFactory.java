@@ -376,7 +376,7 @@ public class ResourceFactory
 	 * 
 	 * @param type Array type for results
 	 * @param query OSS Index REST query
-	 * @param T Type of resource being returned
+	 * @param <T> Type of resource being returned
 	 * @return Results matching the query with the specified type
 	 * @throws IOException On error
 	 */
@@ -408,7 +408,7 @@ public class ResourceFactory
 	 * 
 	 * @param cls Class (type) of the expected resource
 	 * @param id Resource ID to retrieve
-	 * @param T Type of resource being returned
+	 * @param <T> Type of resource being returned
 	 * @return Resource matching the specified ID
 	 * @throws ConnectException On server connection issues
 	 */
@@ -630,7 +630,7 @@ public class ResourceFactory
 	/** Preemptively cache the individual queries for these resources.
 	 * 
 	 * @param resources Individual resources to cache
-	 * @param T Type of resource being returned
+	 * @param <T> Type of resource being returned
 	 */
 	public <T extends AbstractRemoteResource> void cacheResources(T[] resources)
 	{
