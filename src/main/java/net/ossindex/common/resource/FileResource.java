@@ -72,7 +72,7 @@ public class FileResource extends AbstractRemoteResource
 	
 	/** Override the name provided by OSS Index.
 	 * 
-	 * @param name
+	 * @param name File's name
 	 */
 	public void setName(String name)
 	{

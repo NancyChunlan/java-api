@@ -61,7 +61,7 @@ public abstract class AbstractRemoteResource
 
 	/** Get the OSS Index ID.
 	 * 
-	 * @return
+	 * @return The resource's ID
 	 */
 	public long getId()
 	{

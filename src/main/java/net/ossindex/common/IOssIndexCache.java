@@ -51,7 +51,7 @@ public interface IOssIndexCache
 
 	/** Return the cached value if the elapsed time is not passed.
 	 * 
-	 * A delay of < 0 indicates that we should just use the cached value
+	 * A delay of &lt; 0 indicates that we should just use the cached value
 	 * 
 	 * @param requestString Request that is being cached
 	 * @param delay Elapsed time before we ignore the cached value

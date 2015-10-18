@@ -89,7 +89,7 @@ public class PackageDependency
 
 	/** Create a package dependency
 	 * 
-	 * @param line Line number in the file that defines the dependency
+	 * @param position Position of the dependency
 	 * @param pkgManager Package manager the dependency belongs to
 	 * @param pkgName The package name
 	 * @param version The version
@@ -119,7 +119,7 @@ public class PackageDependency
 	 * 
 	 * @param pkgManager Package manager the dependency belongs to
 	 * @param groupId The groupId of the package
-	 * @param pkgName The package name
+	 * @param artifactId The artifact name
 	 * @param version The version
 	 */
 	public PackageDependency(String pkgManager, String groupId, String artifactId, String version)
@@ -215,7 +215,7 @@ public class PackageDependency
 	
 	/** Length of the selection
 	 * 
-	 * @return
+	 * @return Length of the selection
 	 */
 	public int getLength()
 	{
@@ -327,7 +327,7 @@ public class PackageDependency
 	/** Is this a root package, which means it is directly referenced
 	 * (as opposed to transitively).
 	 * 
-	 * @return True if this package is the "root" package
+	 * @param b True if this is a root package
 	 */
 	public void setIsRoot(boolean b)
 	{

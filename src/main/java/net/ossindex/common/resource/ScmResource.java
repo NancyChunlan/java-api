@@ -92,6 +92,7 @@ public class ScmResource extends AbstractRemoteResource
 	/** Get a list of all vulnerabilities affecting this resource.
 	 * 
 	 * @return An array of vulnerabilities affecting the SCM
+	 * @throws IOException On error
 	 */
 	public VulnerabilityResource[] getVulnerabilities() throws IOException
 	{

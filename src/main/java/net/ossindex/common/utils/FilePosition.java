@@ -63,7 +63,7 @@ public class FilePosition
 
 	/** Get the line number
 	 * 
-	 * @return
+	 * @return Line number
 	 */
 	public int getLine()
 	{
@@ -72,7 +72,7 @@ public class FilePosition
 	
 	/** Get the character offset
 	 * 
-	 * @return
+	 * @return Character offset
 	 */
 	public int getOffset()
 	{
@@ -81,7 +81,7 @@ public class FilePosition
 	
 	/** Get the selection length
 	 * 
-	 * @return
+	 * @return Selection length
 	 */
 	public int getLength()
 	{
