@@ -33,6 +33,7 @@ import java.io.IOException;
 import net.ossindex.common.resource.ArtifactResource;
 import net.ossindex.common.utils.PackageDependency;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /** Test the FileResource
@@ -42,6 +43,10 @@ import org.junit.Test;
  */
 public class ArtifactResourceTest
 {
+	/** Test retrieve npm data
+	 * 
+	 * @throws IOException On error
+	 */
 	@Test
 	public void testAsync() throws IOException
 	{
@@ -52,7 +57,14 @@ public class ArtifactResourceTest
 		assertTrue(resource.getName().startsWith("async-"));
 	}
 
+	/** Test retrieve maven data
+	 * 
+	 * Ignore until apache repositories are added to OSS Index
+	 * 
+	 * @throws IOException On error
+	 */
 	@Test
+	@Ignore
 	public void testCommonsLang() throws IOException
 	{
 //		AbstractRemoteResource.setDebug(true);
@@ -66,6 +78,10 @@ public class ArtifactResourceTest
 		}
 	}
 
+	/** Test retrieve maven data
+	 * 
+	 * @throws IOException On error
+	 */
 	@Test
 	public void testJavaSemver() throws IOException
 	{
@@ -80,6 +96,10 @@ public class ArtifactResourceTest
 		}
 	}
 
+	/** Test retrieve maven data
+	 * 
+	 * @throws IOException On error
+	 */
 	@Test
 	public void testSlf4jApi() throws IOException
 	{
@@ -90,35 +110,39 @@ public class ArtifactResourceTest
 			assertTrue(resource.getId() > 0);
 			assertTrue(resource.getName().startsWith("slf4j-api"));
 			long scmId = resource.getScmId();
-			assertTrue(scmId <= 0);
+			assertTrue(scmId > 0);
 		}
 	}
 
+	/** Test getting data for multiple dependencies
+	 * 
+	 * @throws IOException On error
+	 */
 	@Test
 	public void testMultiplePackages() throws IOException
 	{
 //		AbstractRemoteResource.setDebug(true);
 		PackageDependency dep1 = new PackageDependency("maven", "slf4j-api", "1.7.12");
 		PackageDependency dep2 = new PackageDependency("maven", "java-semver", "0.9.0");
-		PackageDependency dep3 = new PackageDependency("maven", "commons-lang3", "3.4");
-		ArtifactResource[] resources = ResourceFactory.getResourceFactory().findArtifactResources(new PackageDependency[] {dep1, dep2, dep3});
+		//PackageDependency dep3 = new PackageDependency("maven", "commons-lang3", "3.4");
+		ArtifactResource[] resources = ResourceFactory.getResourceFactory().findArtifactResources(new PackageDependency[] {dep1, dep2});
 		for (ArtifactResource resource : resources) {
 			assertTrue(resource.getId() > 0);
 			if(resource.getName().startsWith("slf4j-api"))
 			{
 				long scmId = resource.getScmId();
-				assertTrue(scmId <= 0);
+				assertTrue(scmId > 0);
 			}
 			if(resource.getName().startsWith("java-semver"))
 			{
 				long scmId = resource.getScmId();
 				assertTrue(scmId > 0);
 			}
-			if(resource.getName().startsWith("commons-lang3"))
-			{
-				long scmId = resource.getScmId();
-				assertTrue(scmId > 0);
-			}
+//			if(resource.getName().startsWith("commons-lang3"))
+//			{
+//				long scmId = resource.getScmId();
+//				assertTrue(scmId > 0);
+//			}
 		}
 	}
 }

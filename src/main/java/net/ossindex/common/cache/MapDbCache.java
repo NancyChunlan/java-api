@@ -46,7 +46,7 @@ public class MapDbCache implements IOssIndexCache
 
 	/** Create a cache at the specified location
 	 * 
-	 * @param root
+	 * @param root Root directory for cache storage
 	 */
 	public MapDbCache(File root)
 	{
@@ -143,7 +143,7 @@ public class MapDbCache implements IOssIndexCache
 	public void close()
 	{
 		db.commit();
-		db.compact();
+		//db.compact();
 		db.close();
 	}
 

@@ -37,25 +37,25 @@ public interface IOssIndexCache
 
 	/** Cache the specified query
 	 * 
-	 * @param requestString
-	 * @param json
+	 * @param requestString Request that is being cached
+	 * @param json Response to request
 	 */
 	void cache(String requestString, String json);
 
 	/** Get cached results, if they are available
 	 * 
-	 * @param requestString
-	 * @return
+	 * @param requestString Request that was cached
+	 * @return Response to request
 	 */
 	String get(String requestString);
 
 	/** Return the cached value if the elapsed time is not passed.
 	 * 
-	 * A delay of < 0 indicates that we should just use the cached value
+	 * A delay of &lt; 0 indicates that we should just use the cached value
 	 * 
-	 * @param requestString
-	 * @param delay
-	 * @return
+	 * @param requestString Request that is being cached
+	 * @param delay Elapsed time before we ignore the cached value
+	 * @return Response to request
 	 */
 	String get(String requestString, long delay);
 	

@@ -1,9 +1,48 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.ossindex</groupId>
 	<artifactId>ossindex-api</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.3-SNAPSHOT</version>
+
+
+	<name>${project.groupId}:${project.artifactId}</name>
+	<description>OSS Index REST API access library</description>
+	<url>https://github.com/OSSIndex/java-api</url>
+
+	<licenses>
+		<license>
+			<name>BSD 3-Clause License</name>
+			<url>http://opensource.org/licenses/BSD-3-Clause</url>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<name>Ken Duck</name>
+			<email>ossindex@vorsecurity.com</email>
+			<organization>Vör Security</organization>
+			<organizationUrl>http://vorsecurity.com</organizationUrl>
+		</developer>
+	</developers>
+
+	<scm>
+		<connection>scm:git:git@github.com:OSSIndex/java-api.git</connection>
+		<url>https://github.com/OSSIndex/java-api</url>
+		<developerConnection>scm:git:git@github.com-OSSIndex:OSSIndex/java-api.git</developerConnection>
+		<tag>HEAD</tag>
+	</scm>
+
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -14,15 +53,27 @@
 					<target>1.7</target>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.5.1</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>1.5</version>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
-
-	<repositories>
-		<repository>
-			<id>sonatype-snapshots</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</repository>
-	</repositories>
 
 	<dependencies>
 		<dependency>
@@ -58,12 +109,12 @@
 		<dependency>
 			<groupId>net.ossindex</groupId>
 			<artifactId>heuristic-version</artifactId>
-			<version>0.0.6-SNAPSHOT</version>
+			<version>0.0.5</version>
 		</dependency>
 		<dependency>
 			<groupId>org.mapdb</groupId>
 			<artifactId>mapdb</artifactId>
-			<version>2.0.0-SNAPSHOT</version>
+			<version>2.0-beta8</version>
 		</dependency>
 	</dependencies>
 </project>

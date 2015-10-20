@@ -38,6 +38,7 @@ import java.security.SecureRandom;
 
 import net.ossindex.common.resource.FileResource;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /** Test the FileResource
@@ -49,9 +50,10 @@ public class FileResourceTest
 {
 	/**
 	 * The empty file is in OSS Index.
-	 * @throws IOException 
+	 * @throws IOException On error
 	 */
 	@Test
+	@Ignore
 	public void testEmptyFile() throws IOException
 	{
 		File empty = File.createTempFile("ossindex.", ".test");
@@ -64,9 +66,10 @@ public class FileResourceTest
 	 * in case some funny person decides to add my test file to
 	 * a repository somewhere.
 	 * 
-	 * @throws IOException
+	 * @throws IOException On error
 	 */
 	@Test
+	@Ignore
 	public void testUniqueFile() throws IOException
 	{
 		File unique = File.createTempFile("ossindex.", ".test");

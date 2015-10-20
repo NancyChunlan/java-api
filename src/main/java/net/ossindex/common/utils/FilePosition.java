@@ -26,12 +26,34 @@
  */
 package net.ossindex.common.utils;
 
+/** Track the position of text in a file
+ * 
+ * @author Ken Duck
+ *
+ */
 public class FilePosition
 {
+	/**
+	 * Line number
+	 */
 	private int line;
+	
+	/**
+	 * Character position
+	 */
 	private int offset;
+	
+	/**
+	 * Length of the selection
+	 */
 	private int length;
 
+	/** Create a file position
+	 * 
+	 * @param line Line number
+	 * @param offset Character position
+	 * @param length Length of the selection
+	 */
 	public FilePosition(int line, int offset, int length)
 	{
 		this.line = line;
@@ -39,16 +61,28 @@ public class FilePosition
 		this.length = length;
 	}
 
+	/** Get the line number
+	 * 
+	 * @return Line number
+	 */
 	public int getLine()
 	{
 		return line;
 	}
 	
+	/** Get the character offset
+	 * 
+	 * @return Character offset
+	 */
 	public int getOffset()
 	{
 		return offset;
 	}
 	
+	/** Get the selection length
+	 * 
+	 * @return Selection length
+	 */
 	public int getLength()
 	{
 		return length;

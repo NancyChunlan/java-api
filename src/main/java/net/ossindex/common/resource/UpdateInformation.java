@@ -35,6 +35,10 @@ package net.ossindex.common.resource;
  */
 public class UpdateInformation extends AbstractRemoteResource
 {
+	/*
+	 * (non-Javadoc)
+	 * @see net.ossindex.common.resource.AbstractRemoteResource#getResourceType()
+	 */
 	@Override
 	protected String getResourceType()
 	{
@@ -43,7 +47,9 @@ public class UpdateInformation extends AbstractRemoteResource
 	
 	/** Get current and available update information.
 	 * 
-	 * @return
+	 * Doesn't actually do anything yet
+	 * 
+	 * @return Array of update information
 	 */
 	public static UpdateInformation[] getUpdates()
 	{

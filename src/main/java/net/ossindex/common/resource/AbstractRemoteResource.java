@@ -26,11 +26,6 @@
  */
 package net.ossindex.common.resource;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-
-
 /** Provides common code for OSS Index API access.
  * 
  * @author Ken Duck
@@ -48,13 +43,6 @@ public abstract class AbstractRemoteResource
 	 */
 	private long id = -1;
 	
-	static
-	{
-		// Default log4j configuration. Hides configuration warnings.
-		BasicConfigurator.configure();
-		Logger.getRootLogger().setLevel(Level.WARN);
-	}
-	
 	/**
 	 * Required for deserialization
 	 */
@@ -62,9 +50,9 @@ public abstract class AbstractRemoteResource
 	{
 	}
 	
-	/**
+	/** Create a new resource
 	 * 
-	 * @param id
+	 * @param id Create a resource with the specified ID
 	 */
 	public AbstractRemoteResource(long id)
 	{
@@ -73,7 +61,7 @@ public abstract class AbstractRemoteResource
 
 	/** Get the OSS Index ID.
 	 * 
-	 * @return
+	 * @return The resource's ID
 	 */
 	public long getId()
 	{
@@ -82,7 +70,7 @@ public abstract class AbstractRemoteResource
 	
 	/** Returns true if the resource exists at OSS Index
 	 * 
-	 * @return
+	 * @return true if the resource is contained in OSS Index
 	 */
 	public boolean exists()
 	{
@@ -91,7 +79,7 @@ public abstract class AbstractRemoteResource
 	
 	/** Get the OSS Index resource type.
 	 * 
-	 * @return
+	 * @return The resource type name
 	 */
 	protected abstract String getResourceType();
 
