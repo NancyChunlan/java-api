@@ -1,5 +1,5 @@
 /**
- *	Copyright (c) 2015 Vör Security Inc.
+ *	Copyright (c) 2015 Vï¿½r Security Inc.
  *	All rights reserved.
  *	
  *	Redistribution and use in source and binary forms, with or without
@@ -89,7 +89,7 @@ public class PackageDependency
 
 	/**
 	 * 
-	 * @param line Line number in the file that defines the dependency
+	 * @param position
 	 * @param pkgManager
 	 * @param pkgName
 	 * @param version
@@ -97,6 +97,23 @@ public class PackageDependency
 	public PackageDependency(FilePosition position, String pkgManager, String pkgName, String version)
 	{
 		this.position = position;
+		this.name = pkgName;
+		this.version = version;
+		this.pkgManager = pkgManager;
+	}
+	/**
+	 * 
+	 * @param position
+	 * @param pkgManager
+	 * @param groupId
+	 * @param pkgName
+	 * @param version
+	 */
+
+	public PackageDependency(FilePosition position, String pkgManager, String groupId, String pkgName, String version)
+	{
+		this.position = position;
+		this.groupId = groupId;
 		this.name = pkgName;
 		this.version = version;
 		this.pkgManager = pkgManager;

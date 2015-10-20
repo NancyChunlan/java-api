@@ -1,5 +1,5 @@
 /**
- *	Copyright (c) 2015 Vör Security Inc.
+ *	Copyright (c) 2015 Vï¿½r Security Inc.
  *	All rights reserved.
  *	
  *	Redistribution and use in source and binary forms, with or without
@@ -50,6 +50,7 @@ public class MapDbCache implements IOssIndexCache
 	 */
 	public MapDbCache(File root)
 	{
+		System.err.println("MapDbCache location: " + root);
 		db = DBMaker.fileDB(new File(root, "ossindex.cache"))
 				.closeOnJvmShutdown()
 				.make();
