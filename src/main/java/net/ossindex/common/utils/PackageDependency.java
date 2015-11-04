@@ -87,6 +87,11 @@ public class PackageDependency
 	 */
 	private boolean isRoot;
 
+	/**
+	 * The parent is the package that brought this one in as a transitive dependency.
+	 */
+	private PackageDependency parent;
+
 	/** Create a package dependency
 	 * 
 	 * @param position Position of the dependency
@@ -359,5 +364,23 @@ public class PackageDependency
 	public boolean isRoot()
 	{
 		return isRoot;
+	}
+	
+	/** The parent is the package that brought this one in as a transitive dependency.
+	 * 
+	 * @param pkg
+	 */
+	public void setParent(PackageDependency pkg)
+	{
+		parent = pkg;
+	}
+	
+	/** The parent is the package that brought this one in as a transitive dependency.
+	 * 
+	 * @return
+	 */
+	public PackageDependency getParent()
+	{
+		return parent;
 	}
 }

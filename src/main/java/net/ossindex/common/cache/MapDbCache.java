@@ -50,7 +50,6 @@ public class MapDbCache implements IOssIndexCache
 	 */
 	public MapDbCache(File root)
 	{
-		System.err.println("MapDbCache location: " + root);
 		db = DBMaker.fileDB(new File(root, "ossindex.cache"))
 				.closeOnJvmShutdown()
 				.make();
