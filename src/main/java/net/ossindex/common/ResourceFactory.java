@@ -61,7 +61,6 @@ import org.apache.log4j.Logger;
  * @author Ken Duck
  *
  */
-@SuppressWarnings("restriction")
 public class ResourceFactory
 {
 	private static final long ONE_MINUTE = 60000;
