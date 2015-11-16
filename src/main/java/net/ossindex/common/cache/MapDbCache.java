@@ -146,4 +146,14 @@ public class MapDbCache implements IOssIndexCache
 		db.close();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see net.ossindex.common.IOssIndexCache#clear()
+	 */
+	@Override
+	public void clear()
+	{
+		map.clear();
+	}
+
 }

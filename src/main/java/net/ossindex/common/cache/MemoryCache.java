@@ -97,4 +97,14 @@ public class MemoryCache implements IOssIndexCache
 		return get(requestString);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see net.ossindex.common.IOssIndexCache#clear()
+	 */
+	@Override
+	public void clear()
+	{
+		map.clear();
+	}
+
 }

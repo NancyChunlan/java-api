@@ -69,4 +69,8 @@ public interface IOssIndexCache
 	 */
 	void close();
 
+	/** Clear the cache
+	 * 
+	 */
+	void clear();
 }
