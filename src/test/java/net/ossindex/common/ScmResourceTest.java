@@ -56,7 +56,7 @@ public class ScmResourceTest
 		assertNotNull(resources);
 		assertEquals(1, resources.length);
 		assertTrue(resources[0].getId() > 0);
-		assertEquals("jquery", resources[0].getName());
+		assertEquals("JQuery", resources[0].getName());
 	}
 
 	/** Get two SCM resources
@@ -71,7 +71,7 @@ public class ScmResourceTest
 		assertNotNull(resources);
 		assertEquals(2, resources.length);
 		assertTrue(resources[0].getId() > 0);
-		assertEquals("jquery", resources[0].getName());
+		assertEquals("JQuery", resources[0].getName());
 		assertTrue(resources[1].getId() > 0);
 		assertEquals("async", resources[1].getName());
 	}
@@ -88,11 +88,11 @@ public class ScmResourceTest
 		assertNotNull(resources);
 		assertEquals(1, resources.length);
 		assertTrue(resources[0].getId() > 0);
-		assertEquals("jquery", resources[0].getName());
+		assertEquals("JQuery", resources[0].getName());
 		
 		VulnerabilityResource[] vulnerabilities = resources[0].getVulnerabilities();
 		assertNotNull(vulnerabilities);
-		assertEquals(2, vulnerabilities.length);
+		assertEquals(3, vulnerabilities.length);
 	}
 
 
