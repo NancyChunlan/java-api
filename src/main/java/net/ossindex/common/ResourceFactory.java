@@ -32,13 +32,6 @@ import java.io.IOException;
 import java.net.ConnectException;
 import java.util.List;
 
-import net.ossindex.common.resource.AbstractRemoteResource;
-import net.ossindex.common.resource.ArtifactResource;
-import net.ossindex.common.resource.FileResource;
-import net.ossindex.common.resource.PackageResource;
-import net.ossindex.common.resource.ScmResource;
-import net.ossindex.common.utils.PackageDependency;
-
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -52,9 +45,12 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import net.ossindex.common.resource.AbstractRemoteResource;
+import net.ossindex.common.resource.ArtifactResource;
+import net.ossindex.common.resource.FileResource;
+import net.ossindex.common.resource.PackageResource;
+import net.ossindex.common.resource.ScmResource;
+import net.ossindex.common.utils.PackageDependency;
 
 /**
  * 
@@ -70,13 +66,6 @@ public class ResourceFactory
 	
 	private static ResourceFactory instance;
 	
-	static
-	{
-		// Default log4j configuration. Hides configuration warnings.
-		BasicConfigurator.configure();
-		Logger.getRootLogger().setLevel(Level.WARN);
-	}
-
 	/**
 	 * Cache implementation
 	 */
