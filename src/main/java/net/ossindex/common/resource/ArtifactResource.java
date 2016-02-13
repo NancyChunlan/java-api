@@ -229,6 +229,10 @@ public class ArtifactResource extends AbstractRemoteResource implements Comparab
 	 */
 	public IVersion getVersion()
 	{
+		if(version == null || version.isEmpty())
+		{
+			return null;
+		}
 		return VersionFactory.getVersionFactory().getVersion(package_manager, version);
 	}
 
