@@ -76,6 +76,16 @@ public class ArtifactResource extends AbstractRemoteResource implements Comparab
 	private long scm_id;
 	
 	/**
+	 * URI for the SCM
+	 */
+	private String project;
+
+	/**
+	 * SCM id
+	 */
+	private long project_id;
+	
+	/**
 	 * 
 	 */
 	private long package_id;
@@ -219,6 +229,15 @@ public class ArtifactResource extends AbstractRemoteResource implements Comparab
 	 * @return The SCM ID
 	 */
 	public long getScmId()
+	{
+		return scm_id;
+	}
+
+	/** Get the ID of the Project related to the artifact
+	 * 
+	 * @return The SCM ID
+	 */
+	public long getProjectId()
 	{
 		return scm_id;
 	}

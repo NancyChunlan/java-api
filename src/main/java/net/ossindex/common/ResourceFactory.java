@@ -49,6 +49,7 @@ import net.ossindex.common.resource.AbstractRemoteResource;
 import net.ossindex.common.resource.ArtifactResource;
 import net.ossindex.common.resource.FileResource;
 import net.ossindex.common.resource.PackageResource;
+import net.ossindex.common.resource.ProjectResource;
 import net.ossindex.common.resource.ScmResource;
 import net.ossindex.common.utils.PackageDependency;
 
@@ -298,6 +299,7 @@ public class ResourceFactory
 	 * @return The SHA1 checksum for the file
 	 * @throws IOException On error
 	 */
+	@SuppressWarnings("deprecation")
 	private static String getSha1(File file) throws IOException
 	{
 		// Get the SHA1 sum for a file, then check if the MD5 is listed in the
@@ -343,6 +345,49 @@ public class ResourceFactory
 			try
 			{
 				ScmResource[] resources = gson.fromJson(json, ScmResource[].class);
+
+				// Preemptively cache the individual queries for these resources.
+				cacheResources(resources);
+				return resources;
+			}
+			catch(JsonSyntaxException e)
+			{
+				System.err.println("Exception parsing response from request '" + requestString + "'");
+				System.err.println(json);
+
+				// Throw a connect exception so that the caller knows not to try any more.
+				throw new ConnectException(e.getMessage());
+			}
+		}
+		return null;
+	}
+	
+	/** Get an array of project resources matching the provided IDs
+	 * 
+	 * @param projectIds project resource IDs
+	 * @return Array of project resources
+	 * @throws IOException On error
+	 */
+	public ProjectResource[] findProjectResources(long[] projectIds) throws IOException
+	{
+		if(projectIds == null || projectIds.length == 0) return new ProjectResource[0];
+
+		StringBuilder sb = new StringBuilder();
+		sb.append("/v1.0/scm/");
+		for(int i = 0; i < projectIds.length; i++)
+		{
+			if(i > 0) sb.append(",");
+			sb.append(projectIds[i]);
+		}
+		String requestString = sb.toString();
+
+		String json = doGetArray(requestString);
+		if(json != null)
+		{
+			Gson gson = new Gson();
+			try
+			{
+				ProjectResource[] resources = gson.fromJson(json, ProjectResource[].class);
 
 				// Preemptively cache the individual queries for these resources.
 				cacheResources(resources);

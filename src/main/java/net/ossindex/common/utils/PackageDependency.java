@@ -29,6 +29,7 @@ package net.ossindex.common.utils;
 import java.io.IOException;
 
 import net.ossindex.common.resource.ArtifactResource;
+import net.ossindex.common.resource.ProjectResource;
 import net.ossindex.common.resource.ScmResource;
 import net.ossindex.common.resource.VulnerabilityResource;
 
@@ -71,6 +72,11 @@ public class PackageDependency
 	 * SCM that provides sources for the artifact
 	 */
 	private ScmResource scm;
+	
+	/**
+	 * SCM representing the project
+	 */
+	private ProjectResource project;
 
 	/**
 	 * Line number in the parent file that this dependency resides on
@@ -291,6 +297,19 @@ public class PackageDependency
 	{
 		return this.scm;
 	}
+	
+	/** Set the project
+	 * 
+	 * @param project
+	 */
+	public void setProject(ProjectResource project)
+	{
+		this.project = project;
+	}
+	
+	public ProjectResource getProject() {
+		return project;
+	}
 
 	/** Get a description of the dependency
 	 * 
@@ -309,9 +328,9 @@ public class PackageDependency
 	 */
 	public VulnerabilityResource[] getVulnerabilities() throws IOException
 	{
-		if(scm != null)
+		if(project != null)
 		{
-			return scm.getVulnerabilities();
+			return project.getVulnerabilities();
 		}
 		return new VulnerabilityResource[0];
 	}
