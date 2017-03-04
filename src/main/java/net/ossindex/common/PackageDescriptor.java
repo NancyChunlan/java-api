@@ -79,7 +79,7 @@ public class PackageDescriptor {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("PKG: [" + id + "] " + pm + "::" + group + "." + name + " " + version);
+		sb.append("PKG: [" + id + "] " + getPmPackageId());
 		return sb.toString();
 	}
 
@@ -130,5 +130,71 @@ public class PackageDescriptor {
 	 */
 	public int getVulnerabilityMatches() {
 		return vulnerabilityMatches;
+	}
+	
+	/** Get a reasonable unique ID for the package, including the package manager name.
+	 * 
+	 * @return The package ID
+	 */
+	public String getPmPackageId() {
+		StringBuilder sb = new StringBuilder();
+		if (pm != null) sb.append(pm);
+		sb.append(":");
+		if (group != null) sb.append(group);
+		sb.append(":");
+		if (name != null) sb.append(name);
+		sb.append(":");
+		if (version != null) sb.append(version);
+		sb.append(":");
+		return sb.toString();
+	}
+	
+	/** Get a reasonable unique ID for the package.
+	 * 
+	 * @return The package ID
+	 */
+	public String getPackageId() {
+		StringBuilder sb = new StringBuilder();
+		if (group != null) sb.append(group);
+		sb.append(":");
+		if (name != null) sb.append(name);
+		sb.append(":");
+		if (version != null) sb.append(version);
+		sb.append(":");
+		return sb.toString();
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		return getPmPackageId().hashCode();
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof PackageDescriptor) {
+			PackageDescriptor pkg = (PackageDescriptor)o;
+			if (pm != null && !pm.equals(pkg.pm)) {
+				return false;
+			}
+			if (group != null && !group.equals(pkg.group)) {
+				return false;
+			}
+			if (name != null && !name.equals(pkg.name)) {
+				return false;
+			}
+			if (version != null && !version.equals(pkg.version)) {
+				return false;
+			}
+			return true;
+		}
+		return false;
 	}
 }
