@@ -70,7 +70,6 @@ public class PackageRequest extends AbstractOssIndexRequest implements IPackageR
 		String data = gson.toJson(packages);
 		// Perform the OSS Index query
 		String response = this.performPostRequest("package", data);
-		System.err.println(response);
 		
 		// Convert the results to Java objects
 		Type listType = new TypeToken<List<PackageDescriptor>>() {}.getType();
