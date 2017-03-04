@@ -46,8 +46,12 @@ public class AbstractOssIndexRequest {
 
 	private static final String BASE_URL = "https://ossindex.net/v2.0/";
 
-	/**
-	 * Perform the request with the given URL and JSON data.
+	/** Perform the request with the given URL and JSON data.
+	 * 
+	 * @param requestString Server request relative URL
+	 * @param data JSON data for the request
+	 * @return JSON results of the request
+	 * @throws IOException On query problems
 	 */
 	protected String performPostRequest(String requestString, String data) throws IOException {
 		HttpPost request = new HttpPost(getBaseUrl() + requestString);
@@ -70,6 +74,10 @@ public class AbstractOssIndexRequest {
 		return json;
 	}
 
+	/** Get the base URL for requests
+	 * 
+	 * @return The base URL
+	 */
 	private String getBaseUrl() {
 		return BASE_URL;
 	}

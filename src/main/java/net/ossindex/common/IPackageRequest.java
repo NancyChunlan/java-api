@@ -38,13 +38,19 @@ import java.util.Collection;
  */
 public interface IPackageRequest {
 
-	/**
-	 * Add a new artifact to search for. 
+	/** Add a new artifact to search for. 
+	 * 
+	 * @param pm Name of the package manager
+	 * @param groupId Group ID for the package
+	 * @param artifactId Artifact ID for the package
+	 * @param version Version number for request
+	 * @return A package descriptor containing the information
 	 */
-	public PackageDescriptor add(String packageManager, String groupId, String artifactId, String version);
+	public PackageDescriptor add(String pm, String groupId, String artifactId, String version);
 
 	/**
 	 * Execute the request.
+	 * 
 	 * @throws IOException 
 	 */
 	public Collection<PackageDescriptor> run() throws IOException;

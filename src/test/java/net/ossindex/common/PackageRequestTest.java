@@ -39,6 +39,10 @@ import org.junit.Test;
  */
 public class PackageRequestTest {
 	
+	/** Test a single package request
+	 * 
+	 * @throws IOException On request failure
+	 */
 	@Test
 	public void singlePackageRequest() throws IOException {
 		IPackageRequest req = OssIndexApi.createPackageRequest();

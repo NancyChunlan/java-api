@@ -51,6 +51,13 @@ public class PackageDescriptor {
 
 	private List<VulnerabilityDescriptor> vulnerabilities;
 
+	/** Create a package descriptor
+	 * 
+	 * @param pm Name of the package manager
+	 * @param groupId Group ID for the package
+	 * @param artifactId Artifact ID for the package
+	 * @param version Version number for request
+	 */
 	public PackageDescriptor(String pm, String groupId, String artifactId, String version) {
 		this.pm = pm;
 		this.name = artifactId;
@@ -58,6 +65,9 @@ public class PackageDescriptor {
 		this.group = groupId;
 	}
 
+	/**
+	 * Get vulnerabilities belonging to this package.
+	 */
 	public List<VulnerabilityDescriptor> getVulnerabilities() {
 		return vulnerabilities;
 	}
@@ -73,6 +83,10 @@ public class PackageDescriptor {
 		return sb.toString();
 	}
 
+	/**
+	 * Get the group ID
+	 * @return the group ID
+	 */
 	public String getGroup() {
 		if (group != null) {
 			return group;
@@ -80,6 +94,10 @@ public class PackageDescriptor {
 		return "";
 	}
 
+	/**
+	 * Get the artifact name
+	 * @return The artifact name
+	 */
 	public String getName() {
 		if (name != null) {
 			return name;
@@ -87,6 +105,10 @@ public class PackageDescriptor {
 		return "";
 	}
 
+	/**
+	 * Get the package version
+	 * @return The package version.
+	 */
 	public String getVersion() {
 		if (version != null) {
 			return version;
@@ -94,10 +116,18 @@ public class PackageDescriptor {
 		return "";
 	}
 
+	/**
+	 * Get the total number of vulnerabilities for the package identified on the server.
+	 * @return Total number of vulnerabilities.
+	 */
 	public int getVulnerabilityTotal() {
 		return vulnerabilityTotal;
 	}
 
+	/**
+	 * Get the total number of vulnerabilities matching the supplied version.
+	 * @return Number of matching vulnerabilities
+	 */
 	public int getVulnerabilityMatches() {
 		return vulnerabilityMatches;
 	}

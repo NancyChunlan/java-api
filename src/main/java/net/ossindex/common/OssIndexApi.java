@@ -36,6 +36,11 @@ import net.ossindex.common.request.PackageRequest;
  */
 public class OssIndexApi {
 	
+	/**
+	 * Create a package request object.
+	 * 
+	 * @return The new package request
+	 */
 	public static IPackageRequest createPackageRequest() {
 		return new PackageRequest();
 	}
