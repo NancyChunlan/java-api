@@ -57,7 +57,7 @@ public class AbstractOssIndexRequest {
 		HttpPost request = new HttpPost(getBaseUrl() + requestString);
 
 		String json = null;
-		CloseableHttpClient httpclient = HttpClients.custom()
+		CloseableHttpClient httpClient = HttpClients.custom()
                     .useSystemProperties()
                     .build();
 		try {
